@@ -243,7 +243,8 @@ angular.module('lumeparkApp', ['ionic', 'ngResource'])
     .controller('itemCtrl', ['$scope', '$http', '$resource', '$stateParams', '$window', function($scope, $http, $resource, $stateParams, $window){
         $scope.entities = {
             result: [],
-            customers: []
+            customers: [],
+            prices: []
         }
 
         $http.get(erplyAPI + 'getCustomers', {
@@ -259,6 +260,29 @@ angular.module('lumeparkApp', ['ionic', 'ngResource'])
                 cl(data)
                 data.records.forEach(function(value, key) {
                     $scope.entities.customers.push({id: value.customerID, name: value.fullName.trim()})
+                })
+            })
+            .error(function(data2) {
+                cl(data)
+            })
+            .finally(function() {
+
+            })
+
+        $http.get(erplyAPI + 'getProducts', {
+                headers: {
+                    'X-Auth-UserId': $window.sessionStorage.getItem('user_id'),
+                    'X-Auth-Token': $window.sessionStorage.getItem('token')
+                },
+                params: {
+                    groupID: 3,
+                    recordsOnPage: 1000
+                }
+            })
+            .success(function(data) {
+                cl(data)
+                data.records.forEach(function(value, key) {
+                    $scope.entities.prices.push({id: value.productID, name: value.name.trim()})
                 })
             })
             .error(function(data2) {

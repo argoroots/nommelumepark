@@ -14,9 +14,8 @@ script(type='text/ng-template', id='item')
           label.item.item-input.item-select
             span.input-label Hind
             select
-              option 1 tund
-              option 3 tundi
-              option 1 päev
+              option
+              option(ng-repeat='p in entities.prices | orderBy : "name" ', ) {{ p.name }}
           label.item.item-input
             span.input-label ERPLY viide
             input(type='text', disabled)
