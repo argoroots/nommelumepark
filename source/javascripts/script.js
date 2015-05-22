@@ -137,7 +137,7 @@ angular.module('lumeparkApp', ['ionic', 'ngResource'])
             })
     }])
 
-    .controller('listCtrl', ['preferences', '$scope', '$http', '$stateParams', '$timeout', function(preferences, $scope, $http, $stateParams, $timeout){
+    .controller('listCtrl', ['preferences', '$scope', '$http', '$stateParams', '$timeout', '$window', function(preferences, $scope, $http, $stateParams, $timeout, $window){
         $scope.entu_url = entuAPI
         $scope.page = 0
         $scope.preferences = preferences.preferences
