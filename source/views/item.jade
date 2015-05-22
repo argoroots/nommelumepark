@@ -1,0 +1,55 @@
+script(type='text/ng-template', id='item')
+
+  ion-view(title='{{ entities.title }}')
+    ion-nav-page
+
+      ion-content(padding='true' has-bouncing='false')
+
+        ion-list.card
+          label.item.item-input.item-select
+            span.input-label Klient
+            select
+              option
+              option(ng-repeat='c in entities.customers | orderBy : "name" ', ) {{ c.name }}
+          label.item.item-input.item-select
+            span.input-label Hind
+            select
+              option 1 tund
+              option 3 tundi
+              option 1 päev
+          label.item.item-input
+            span.input-label ERPLY viide
+            input(type='text', disabled)
+          label.item.item-input
+            span.input-label Märkused
+            input(type='text')
+
+        ion-list.card
+          label.item.item-input
+            span.input-label Broneeringu algus
+            input(type='datetime')
+          label.item.item-input
+            span.input-label Broneeringu lõpp
+            input(type='datetime')
+          label.item.item-input
+            span.input-label Laenutuse algus
+            input(type='datetime')
+          label.item.item-input
+            span.input-label Laenutuse lõpp
+            input(type='datetime')
+
+
+        ion-list.card
+          ion-item.item-icon-left.item-icon-right(ng-repeat='entity in entities.result | filter : query | orderBy : "status" : true')
+            i.icon.assertive.ion-ios-timer-outline(ang-show='entity.status === "out"', title='Väljas')
+            h2 {{ entity.name }}
+            p {{ entity.info }} &nbsp;
+            i.icon.ion-ios-arrow-right.icon-accessory
+
+        .row
+          a.button.button-outline.button-balanced.col() Tagasta kõik
+
+          .col
+
+          a#do-scan.button.button-outline.button-stable.col(ng-if='preferences.p2sMode', href='p2spro://scan?callback=javascript:angular.element(document.getElementById("do-scan")).scope().scanCode("CODE")') Lisa toode
+          a#do-scan.button.button-outline.button-stable.col(ng-if='!preferences.p2sMode', ng-click='scanCode()') Lisa toode

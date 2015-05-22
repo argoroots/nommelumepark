@@ -1,0 +1,27 @@
+script(type='text/ng-template', id='list')
+
+
+  ion-view(title='{{ entities.title }}', hide-back-button='true')
+    ion-nav-page()
+      ion-nav-buttons(side='left')
+        a.button.button-icon.ion-ios-arrow-left(href='#/')
+      ion-nav-buttons(side='right')
+        a.button.button-clear.icon.ion-ios-compose-outline(href='#/item/')
+
+      ion-content(has-header='true')
+        ion-subheader-bar.item-input-inset
+          form.item-input-wrapper
+            i.icon.ion-ios-search.placeholder-icon
+            input#query(type='search', ng-model='query', ng-blur='loadEntities(true, query)')
+
+        ion-refresher(on-refresh='loadEntities(true, query)', refreshing-icon='ion-ios-reloading', pulling-icon='ion-ios-arrow-thin-down')
+        ion-list
+          //- .item.item-divider(ng-repeat-start='status in ["out", "bron", "archive"]', ng-show='(entities.result | filter:{status: status}).length > 0') {{ status }}
+          ion-item.item-icon-left.item-icon-right(ng-repeat-end, ng-repeat='entity in entities.result | filter : query | orderBy : "status" : true', href='#/item/{{ entity.id }}')
+            i.icon.assertive.ion-ios-timer-outline(ng-show='entity.status === "out"', title='Väljas')
+            i.icon.energized.ion-ios-calendar-outline(ng-show='entity.status === "bron"', title='Broneeritud')
+            i.icon.balanced.ion-ios-checkmark-outline(ng-show='entity.status === "archive"', title='Tagasi')
+            h2 {{ entity.name }}
+            p {{ entity.info }} &nbsp;
+            i.icon.ion-ios-arrow-right.icon-accessory
+        ion-infinite-scroll(ng-if='!entities.noMore', on-infinite='loadEntities(false, query)', distance='10%')
