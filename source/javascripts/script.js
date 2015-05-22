@@ -337,8 +337,35 @@ angular.module('lumeparkApp', ['ionic', 'ngResource'])
         $scope.scanCode = function(code) {
             // if(code === 'CANCELLED') return
             if(!code) code = prompt("Sisesta triipkood või inventarinumber")
-            if(!code) return
+            // if(!code) return
 
+            alert(code)
+
+            // $http.get(erplyAPI + 'saveSalesDocument', {
+            //         headers: {
+            //             'X-Auth-UserId': $window.sessionStorage.getItem('user_id'),
+            //             'X-Auth-Token': $window.sessionStorage.getItem('token')
+            //         },
+            //         params: {
+            //             type: 'CASHINVOICE',
+            //             pointOfSaleID: 2,
+            //             customerID: 496,
+            //             confirmInvoice: 0,
+            //             productID2: 20,
+            //             amount2: 1,
+            //             productID3: 21,
+            //             amount3: 1,
+            //         }
+            //     })
+            //     .success(function(data) {
+            //         cl(data)
+            //     })
+            //     .error(function(data2) {
+            //         cl(data)
+            //     })
+            //     .finally(function() {
+            //         $scope.endLoading()
+            //     })
             $http.get(entuAPI + 'entity', {
                     headers: {
                         'X-Auth-UserId': $window.sessionStorage.getItem('user_id'),
