@@ -35,21 +35,25 @@ html(ng-app='lumeparkApp')
 
                 #bs-example-navbar-collapse-1.collapse.navbar-collapse
                     ul.nav.navbar-nav.navbar-right(ng-if='user')
-                        li(ng-class='{ active: lendingsFilter === "bron" }')
+                        li(ng-class='{ active: activeMenu === "bron" }')
                             a(href='/#/lendings/bron') Broneeringud
-                        li(ng-class='{ active: lendingsFilter === "out" }')
+                        li(ng-class='{ active: activeMenu === "out" }')
                             a(href='/#/lendings/out') Rendis
                         li
                             a(href='/#/logout')
                                 i.fa.fa-sign-out
                     ul.nav.navbar-nav.navbar-right(ng-if='!user')
-
                         li
                             a(href='/#/login')
                                 i.fa.fa-sign-in
+
+                    ul.nav.navbar-nav.navbar-right(ng-if='loading')
+                        li.navbar-text
+                            i.fa.fa-spinner.fa-spin
 
         .container
             div(ng-view)
 
             include start
             include lendings
+            include lending

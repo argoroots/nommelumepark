@@ -13,7 +13,3 @@ script(type='text/ng-template', id='lendings')
                     th
                         a(ng-href='/#/lending/{{ lending.id }}') {{ lending.name }}
                     td {{ lending.info }}
-
-    .row(ng-if='loading')
-        .col-xs-12.text-center
-            i.fa.fa-3x.fa-clock-o.fa-spin

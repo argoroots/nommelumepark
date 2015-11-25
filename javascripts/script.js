@@ -140,8 +140,9 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 // START
     .controller('startCtrl', ['$rootScope', '$http', '$window', function($rootScope, $http, $window) {
-        $rootScope.entu_url = entuAPI
-        $rootScope.listFilter = null
+        $rootScope.loading = true
+        $rootScope.activeMenu = null
+        $rootScope.entuUrl = entuAPI
 
         entu.getUser($window.sessionStorage.getItem('user_id'), $window.sessionStorage.getItem('user_token'), $http, function(error, user) {
             if(error) {
@@ -149,8 +150,8 @@ angular.module('lumeparkApp', ['ngRoute'])
             } else {
                 $rootScope.user = user
             }
+            $rootScope.loading = false
         })
-
     }])
 
 
@@ -204,24 +205,23 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 // LENDINGS
     .controller('lendingsCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window){
-        $rootScope.listFilter = $routeParams.filter
-
-        $scope.loading = true
+        $rootScope.loading = true
+        $rootScope.activeMenu = $routeParams.filter
 
         async.waterfall([
             function getUser(callback) {
                 entu.getUser($window.sessionStorage.getItem('user_id'), $window.sessionStorage.getItem('user_token'), $http, function(error, user) {
                     if(error) {
+                        $rootScope.user = null
                         callback(error)
                     } else {
                         $rootScope.user = user
-
                         callback(null, user)
                     }
                 })
             },
             function getLendings(user, callback) {
-                entu.getEntities({ definition: 'laenutus' }, $rootScope.user.id, $rootScope.user.token, $http, function(error, lendings) {
+                entu.getEntities({ definition: 'laenutus' }, user.id, user.token, $http, function(error, lendings) {
                     if(error) {
                         callback(error)
                     } else {
@@ -248,6 +248,8 @@ angular.module('lumeparkApp', ['ngRoute'])
             if(error) {
                 cl(error)
             }
-            $scope.loading = false
+            $rootScope.loading = false
+        })
+    }])
         })
     }])
