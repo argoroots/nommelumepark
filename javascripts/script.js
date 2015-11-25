@@ -28,12 +28,11 @@ entu.getUser = function(user_id, user_token, http, callback) {
 
                 callback(null, user)
             } else {
-                callback(new Error('No user'))
+                callback(data)
             }
         })
         .error(function(error) {
-            cl(error)
-            callback(new Error('No user'))
+            callback(error)
         })
 }
 
@@ -49,12 +48,11 @@ entu.getEntities = function(params, user_id, user_token, http, callback) {
             if(data.result !== []) {
                 callback(null, data.result)
             } else {
-                callback(new Error('No entities'))
+                callback(data)
             }
         })
         .error(function(error) {
-            cl(error)
-            callback(new Error('No entities'))
+            callback(error)
         })
 }
 
@@ -76,12 +74,11 @@ entu.getEntity = function(entity_id, user_id, user_token, http, callback) {
 
                 callback(null, entity)
             } else {
-                callback(new Error('No entity #' + entity_id + ''))
+                callback(data)
             }
         })
         .error(function(error) {
-            cl(error)
-            callback(new Error('No entity #' + entity_id + ''))
+            callback(error)
         })
 }
 
@@ -102,12 +99,31 @@ entu.getChilds = function(entity_id, user_id, user_token, http, callback) {
                 }
                 callback(null, entities)
             } else {
-                callback(new Error('No childs'))
+                callback(data)
             }
         })
         .error(function(error) {
-            cl(error)
-            callback(new Error('No childs'))
+            callback(error)
+        })
+}
+
+entu.getErply = function(method, params, user_id, user_token, http, callback) {
+    http.get(erplyAPI + method, {
+            headers: {
+                'X-Auth-UserId': user_id,
+                'X-Auth-Token': user_token
+            },
+            params: params
+        })
+        .success(function(data) {
+            if(data.records) {
+                callback(null, data.records)
+            } else {
+                callback(data)
+            }
+        })
+        .error(function(error) {
+            callback(error)
         })
 }
 
@@ -281,7 +297,7 @@ angular.module('lumeparkApp', ['ngRoute'])
     .controller('lendingCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window) {
         $rootScope.loading = true
 
-        async.waterfall([
+        async.series([
             function getUser(callback) {
                 entu.getUser($window.sessionStorage.getItem('user_id'), $window.sessionStorage.getItem('user_token'), $http, function(error, user) {
                     if(error) {
@@ -293,38 +309,76 @@ angular.module('lumeparkApp', ['ngRoute'])
                     }
                 })
             },
-            function getLending(callback) {
-                entu.getEntity($routeParams.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
-                    if(error) {
-                        callback(error)
-                    } else {
-                        $scope.lending = entity
-                        callback()
-                    }
-                })
-            },
-            function getLendingChilds(callback) {
-                entu.getChilds($routeParams.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entities) {
-                    if(error) {
-                        callback(error)
-                    } else {
-                        callback(null, entities)
-                    }
-                })
-            },
-            function getLendingRows(lendingChilds, callback) {
-                $scope.lendingRows = []
-                async.each(lendingChilds, function(value) {
-                    entu.getEntity(value.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
-                        if(error) {
-                            callback(error)
-                        } else {
-                            $scope.lendingRows.push(entity)
+            function getData(callback) {
+                async.parallel([
+                    function getLending(callback) {
+                        entu.getEntity($routeParams.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
+                            if(error) {
+                                callback(error)
+                            } else {
+                                $scope.lending = entity
+                                callback()
+                            }
+                        })
+                    },
+                    function getLendingRows(callback) {
+                        async.waterfall([
+                            function getLendingChilds(callback) {
+                                entu.getChilds($routeParams.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entities) {
+                                    if(error) {
+                                        callback(error)
+                                    } else {
+                                        callback(null, entities)
+                                    }
+                                })
+                            },
+                            function getLendingRows(lendingChilds, callback) {
+                                $scope.lendingRows = []
+                                async.each(lendingChilds, function(value) {
+                                    entu.getEntity(value.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
+                                        if(error) {
+                                            callback(error)
+                                        } else {
+                                            $scope.lendingRows.push(entity)
 
-                            callback()
-                        }
-                    })
-                }, callback)
+                                            callback()
+                                        }
+                                    })
+                                }, callback)
+                            }
+                        ], callback)
+                    },
+                    function getErplyCustomers(callback) {
+                        entu.getErply('getCustomers', { recordsOnPage: 1000 }, $rootScope.user.id, $rootScope.user.token, $http, function(error, customers) {
+                            if(error) {
+                                callback(error)
+                            } else {
+                                $scope.customers = []
+                                async.each(customers, function(item) {
+                                    $scope.customers.push({
+                                        id: item.customerID,
+                                        name: item.fullName.trim()
+                                    })
+                                }, callback)
+                            }
+                        })
+                    },
+                    function getErplyPrices(callback) {
+                        entu.getErply('getProducts', { groupID: 3, recordsOnPage: 1000 }, $rootScope.user.id, $rootScope.user.token, $http, function(error, customers) {
+                            if(error) {
+                                callback(error)
+                            } else {
+                                $scope.prices = []
+                                async.each(customers, function(item) {
+                                    $scope.prices.push({
+                                        id: item.productID,
+                                        name: item.name.trim()
+                                    })
+                                }, callback)
+                            }
+                        })
+                    },
+                ], callback)
             }
         ], function(error) {
             if(error) {
@@ -332,4 +386,27 @@ angular.module('lumeparkApp', ['ngRoute'])
             }
             $rootScope.loading = false
         })
+
     }])
+
+
+
+// $http.get(erplyAPI + 'saveSalesDocument', {
+//         headers: {
+//             'X-Auth-UserId': $window.sessionStorage.getItem('user_id'),
+//             'X-Auth-Token': $window.sessionStorage.getItem('user_token')
+//         },
+//         params: {
+//             type: 'CASHINVOICE',
+//             pointOfSaleID: 2,
+//             customerID: 496,
+//             confirmInvoice: 0,
+//             productID2: 20,
+//             amount2: 1,
+//             productID3: 21,
+//             amount3: 1,
+//         }
+//     })
+//     .success(function(data) {
+//         cl(data)
+//     })
