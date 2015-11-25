@@ -92,9 +92,9 @@ entu.getChilds = function(entityId, userId, userToken, http, callback) {
         .success(function(data) {
             if(data.result) {
                 var entities = []
-                for (var i in data.result) {
+                for(var i in data.result) {
                     if(!data.result.hasOwnProperty(i)) { continue }
-                    for (var n in data.result[i].entities) {
+                    for(var n in data.result[i].entities) {
                         if(!data.result[i].entities.hasOwnProperty(n)) { continue }
                         entities.push(data.result[i].entities[n])
                     }
@@ -293,6 +293,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 //LENDING
     .controller('lendingCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window) {
         $rootScope.loading = true
+        $scope.newErplyRow = 0
 
         async.series([
             function getUser(callback) {
@@ -363,7 +364,9 @@ angular.module('lumeparkApp', ['ngRoute'])
                                 async.each(customers, function(item, callback) {
                                     $scope.prices.push({
                                         id: item.productID,
-                                        name: item.name.trim()
+                                        name: item.name.trim(),
+                                        price: item.priceWithVat,
+                                        quantity: 1
                                     })
                                     callback()
                                 }, callback)
@@ -379,15 +382,49 @@ angular.module('lumeparkApp', ['ngRoute'])
             $rootScope.loading = false
         })
 
+        $scope.sumErplyRows = function() {
+            var sum = 0
+            for(var i in $scope.erplyRows) {
+                if(!$scope.erplyRows.hasOwnProperty(i)) { continue }
+                sum = sum + $scope.erplyRows[i].price * $scope.erplyRows[i].quantity
+            }
+            return sum
+        }
+
         $scope.addErplyRow = function(value) {
+            $scope.newErplyPrice = { id: 0, name: "-- Lisa uus --" }
             if(!value) {
                 return
             }
             if(!$scope.erplyRows) {
                 $scope.erplyRows = []
             }
+
+            for(var i in $scope.erplyRows) {
+                if(!$scope.erplyRows.hasOwnProperty(i)) { continue }
+                if($scope.erplyRows[i].id === value.id) {
+                    $scope.erplyRows[i].quantity = $scope.erplyRows[i].quantity + 1
+                    return
+                }
+            }
             $scope.erplyRows.push(value)
-            $scope.newErplyRow = ''
+        }
+
+        $scope.deleteErplyRow = function(value) {
+            if(!value) {
+                return
+            }
+            for(var i in $scope.erplyRows) {
+                if(!$scope.erplyRows.hasOwnProperty(i)) { continue }
+                if($scope.erplyRows[i].id === parseInt(value, 10)) {
+                    if($scope.erplyRows[i].quantity > 1) {
+                        $scope.erplyRows[i].quantity = $scope.erplyRows[i].quantity - 1
+                    } else {
+                        $scope.erplyRows.splice(i, 1)
+                    }
+                    break
+                }
+            }
         }
 
     }])

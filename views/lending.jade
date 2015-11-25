@@ -2,14 +2,14 @@ script(type='text/ng-template', id='lending')
 
     form.row
         .form-group.col-xs-12.col-sm-6.col-md-4
-            label(for='laenutaja') Klient
-            select#laenutaja.form-control()
+            label(ng-if='customers', for='laenutaja') Klient
+            select#laenutaja.form-control(ng-if='customers')
                 option
                 option(ng-repeat='c in customers | orderBy : "name"') {{ c.name }}
 
         .form-group.col-xs-12.col-sm-6.col-md-6
             label(for='kirjeldus') Info
-            input#kirjeldus.form-control(type='text')
+            input#kirjeldus.form-control(type='text', ng-model='lendingDescription')
 
         .form-group.col-xs-6.col-md-2
             label(for='erply') Erply viide
@@ -49,18 +49,22 @@ script(type='text/ng-template', id='lending')
             table.table
                 thead
                     tr
-                        th(colspan=2) Erply hinnad
+                        th(colspan=2) Hind
+                        th.text-right {{ sumErplyRows().toFixed(1).replace('.0', '.-') }}
+                        th &nbsp;
                 tbody
-                    tr(ng-repeat='row in erplyRows')
-                        td {{ row }}
+                    tr(ng-repeat='row in erplyRows | orderBy : "name" track by $index')
+                        td {{ row.name }}
+                        td.text-right
+                            span(ng-if='row.quantity > 1') {{ row.quantity }}&nbsp;x
+                        td.text-right {{ row.price.toFixed(1).replace('.0', '.-') }}
                         td
-                            button.btn.btn-xs.btn-danger.pull-right Kustuta
+                            button.btn.btn-xs.btn-danger.pull-right(ng-click='deleteErplyRow(row.id)') Kustuta
                             //- button.btn.btn-xs.btn-success Väljasta
-                    tr
-                        td(colspan=2)
-                            select.form-control(ng-change='addErplyRow(newErplyRow)', ng-model='newErplyRow')
+                    tr(ng-if='prices')
+                        td(colspan=4)
+                            select.form-control(ng-options='p.name for p in prices | orderBy : "name"', ng-model='newErplyPrice', ng-change='addErplyRow(newErplyPrice); newErplyPrice=null')
                                 option
-                                option(ng-repeat='p in prices | orderBy : "name"', value='{{ p.name }}') {{ p.name }}
 
     .row.spacer
 
