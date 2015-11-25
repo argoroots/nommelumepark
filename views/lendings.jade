@@ -7,9 +7,14 @@ script(type='text/ng-template', id='lendings')
                 span.glyphicon.glyphicon-search.form-control-feedback(aria-hidden="true")
 
     .row(ng-if='lendings')
-        table.table.col-xs-12
-            tbody
-                tr(ng-repeat='lending in lendings | filter : search | orderBy : "status" : true')
-                    th
-                        a(ng-href='/#/lending/{{ lending.id }}') {{ lending.name }}
-                    td {{ lending.info }}
+        .col-xs-12
+            table.table
+                thead
+                    tr
+                        th Klient
+                        th Info
+                tbody
+                    tr(ng-repeat='lending in lendings | filter : search | orderBy : "status" : true')
+                        th
+                            a(ng-href='/#/lending/{{ lending.id }}') {{ lending.name }}
+                        td {{ lending.info }}

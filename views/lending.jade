@@ -1,0 +1,44 @@
+script(type='text/ng-template', id='lending')
+
+    form.row
+        .form-group.col-xs-12.col-sm-6.col-md-4
+            label(for='laenutaja') Klient
+            select#laenutaja.form-control()
+                option
+                option(ng-repeat='c in customers | orderBy : name') {{ c.name }}
+
+        .form-group.col-xs-12.col-sm-6.col-md-4
+            label(for='kirjeldus') Info
+            input#kirjeldus.form-control(type='text')
+
+        .form-group.col-xs-6.col-md-2
+            label(for='erply') Erply viide
+            input#erply.form-control(type='text')
+
+        .form-group.col-xs-6.col-md-2
+            label(for='laenutaja') Staatus
+            select#laenutaja.form-control()
+                option(value='bron') Broneering
+                option(value='out') Väljas
+                option(value='archive') Tagasi
+
+
+    .row(ng-if='lendingRows')
+        .col-xs-12
+            table.table
+                thead
+                    tr
+                        th Varustus
+                        th Algus
+                        th Lõpp
+                        th Staatus
+                tbody
+                    tr(ng-repeat='row in lendingRows | filter : search | orderBy : "status" : true')
+                        td {{ row.name }}
+                        td {{ row.info }}
+                        td {{ row.info }}
+                        td
+                            select#laenutaja.form-control.input-sm()
+                                option(value='bron') Broneering
+                                option(value='out') Väljas
+                                option(value='archive') Tagasi
