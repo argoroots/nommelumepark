@@ -1,23 +1,24 @@
 script(type='text/ng-template', id='lendings')
+    div(ng-if='user')
 
-    a.btn.btn-success.pull-right(href='/#/lending/new') Lisa uus
-    form.row
-        .col-xs-9.col-sm-8.col-md-6.col-lg-4.col-sm-offset-2.col-md-offset-3.col-lg-offset-4
-            .form-group.has-feedback
-                input.form-control(type='search', ng-model='search')
-                span.glyphicon.glyphicon-search.form-control-feedback(aria-hidden="true")
+        a.btn.btn-success.pull-right(href='/#/lending/new') Lisa uus
+        form.row
+            .col-xs-9.col-sm-8.col-md-6.col-lg-4.col-sm-offset-2.col-md-offset-3.col-lg-offset-4
+                .form-group.has-feedback
+                    input.form-control(type='search', ng-model='search')
+                    span.glyphicon.glyphicon-search.form-control-feedback(aria-hidden="true")
 
-    .row.spacer
+        .row.spacer
 
-    .row(ng-if='lendings')
-        .col-xs-12
-            table.table
-                thead
-                    tr
-                        th Klient
-                        th Info
-                tbody
-                    tr(ng-repeat='lending in lendings | filter : search | orderBy : "status" : true')
-                        th
-                            a(ng-href='/#/lending/{{ lending._id }}') {{ lending._name }}
-                        td {{ lending._info }}
+        .row(ng-if='lendings')
+            .col-xs-12
+                table.table
+                    thead
+                        tr
+                            th Klient
+                            th Info
+                    tbody
+                        tr(ng-repeat='lending in lendings | filter : search | orderBy : "status" : true')
+                            th
+                                a(ng-href='/#/lending/{{ lending._id }}') {{ lending._name }}
+                            td {{ lending._info }}
