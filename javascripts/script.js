@@ -262,13 +262,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                 })
             },
             function getLendings(callback) {
-                entu.getEntities({ definition: 'laenutus' }, $rootScope.user.id, $rootScope.user.token, $http, function(error, entities) {
-                    if(error) {
-                        callback(error)
-                    } else {
-                        callback(null, entities)
-                    }
-                })
+                entu.getEntities({ definition: 'laenutus' }, $rootScope.user.id, $rootScope.user.token, $http, callback)
             },
             function getEachLending(lendings, callback) {
                 $scope.lendings = []
@@ -281,7 +275,6 @@ angular.module('lumeparkApp', ['ngRoute'])
                             if(!$routeParams.filter || $routeParams.filter === entity.status) {
                                 $scope.lendings.push(entity)
                             }
-
                             callback()
                         }
                     })
@@ -328,23 +321,16 @@ angular.module('lumeparkApp', ['ngRoute'])
                     function getLendingRows(callback) {
                         async.waterfall([
                             function getChilds(callback) {
-                                entu.getChilds($routeParams.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entities) {
-                                    if(error) {
-                                        callback(error)
-                                    } else {
-                                        callback(null, entities)
-                                    }
-                                })
+                                entu.getChilds($routeParams.id, $rootScope.user.id, $rootScope.user.token, $http, callback)
                             },
                             function getEntities(lendingChilds, callback) {
                                 $scope.lendingRows = []
-                                async.each(lendingChilds, function(value) {
+                                async.each(lendingChilds, function(value, callback) {
                                     entu.getEntity(value.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
                                         if(error) {
                                             callback(error)
                                         } else {
                                             $scope.lendingRows.push(entity)
-
                                             callback()
                                         }
                                     })
@@ -358,11 +344,12 @@ angular.module('lumeparkApp', ['ngRoute'])
                                 callback(error)
                             } else {
                                 $scope.customers = []
-                                async.each(customers, function(item) {
+                                async.each(customers, function(item, callback) {
                                     $scope.customers.push({
                                         id: item.customerID,
                                         name: item.fullName.trim()
                                     })
+                                    callback()
                                 }, callback)
                             }
                         })
@@ -373,11 +360,12 @@ angular.module('lumeparkApp', ['ngRoute'])
                                 callback(error)
                             } else {
                                 $scope.prices = []
-                                async.each(customers, function(item) {
+                                async.each(customers, function(item, callback) {
                                     $scope.prices.push({
                                         id: item.productID,
                                         name: item.name.trim()
                                     })
+                                    callback()
                                 }, callback)
                             }
                         })
