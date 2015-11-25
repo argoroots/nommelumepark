@@ -16,9 +16,15 @@ script(type='text/ng-template', id='lendings')
                     thead
                         tr
                             th Klient
-                            th Info
+                            th Algus
+                            th Lõpp
+                            th Lisainfo
+                            th Erply #
                     tbody
                         tr(ng-repeat='lending in lendings | filter : search | orderBy : "status" : true')
                             th
-                                a(ng-href='/#/lending/{{ lending._id }}') {{ lending._name }}
-                            td {{ lending._info }}
+                                a(ng-href='/#/lending/{{ lending._id }}') {{ lending.laenutaja.value }}
+                            th .
+                            th .
+                            td {{ lending.kirjeldus.value }}
+                            td {{ lending.erply.value }}
