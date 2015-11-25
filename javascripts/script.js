@@ -58,7 +58,6 @@ entu.getEntities = function(params, user_id, user_token, http, callback) {
         })
 }
 
-
 entu.getEntity = function(entity_id, user_id, user_token, http, callback) {
     http.get(entuAPI + 'entity-' + entity_id, {
             headers: {
@@ -86,7 +85,31 @@ entu.getEntity = function(entity_id, user_id, user_token, http, callback) {
         })
 }
 
-
+entu.getChilds = function(entity_id, user_id, user_token, http, callback) {
+    http.get(entuAPI + 'entity-' + entity_id +'/childs', {
+            headers: {
+                'X-Auth-UserId': user_id,
+                'X-Auth-Token': user_token
+            }
+        })
+        .success(function(data) {
+            if(data.result) {
+                var entities = []
+                for (var i in data.result) {
+                    for (var n in data.result[i].entities) {
+                        entities.push(data.result[i].entities[n])
+                    }
+                }
+                callback(null, entities)
+            } else {
+                callback(new Error('No childs'))
+            }
+        })
+        .error(function(error) {
+            cl(error)
+            callback(new Error('No childs'))
+        })
+}
 
 
 
@@ -131,7 +154,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 // ANALYTICS
     .run(['$rootScope', '$location', function($rootScope, $location) {
-        // $rootScope.$on('$routeChangeSuccess', function(){
+        // $rootScope.$on('$routeChangeSuccess', function() {
         //     ga('send', 'pageview', {page: $location.path(), title: $location.path().substring(1).replace('/', ' - ')})
         // })
     }])
@@ -157,7 +180,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 // LOGIN
-    .controller('loginCtrl', ['$http', '$location', '$window', function($http, $location, $window){
+    .controller('loginCtrl', ['$http', '$location', '$window', function($http, $location, $window) {
         var state = '1234567890abcdef'
 
         $window.sessionStorage.clear()
@@ -176,7 +199,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 // AUTH AFTER LOGIN
-    .controller('authCtrl', ['$http', '$window', function($http, $window){
+    .controller('authCtrl', ['$http', '$window', function($http, $window) {
         var auth_url = $window.sessionStorage.getItem('auth_url')
         var state = $window.sessionStorage.getItem('state')
 
@@ -195,7 +218,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 // LOGOUT
-    .controller('logoutCtrl', ['$rootScope', '$location', '$window', function($rootScope, $location, $window){
+    .controller('logoutCtrl', ['$rootScope', '$location', '$window', function($rootScope, $location, $window) {
         $window.sessionStorage.clear()
         $rootScope.user = null
         $window.location.href = entuAPI3 + 'exit?next=' + $location.protocol() + '://' + location.host
@@ -204,7 +227,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 // LENDINGS
-    .controller('lendingsCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window){
+    .controller('lendingsCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window) {
         $rootScope.loading = true
         $rootScope.activeMenu = $routeParams.filter
 
@@ -216,16 +239,16 @@ angular.module('lumeparkApp', ['ngRoute'])
                         callback(error)
                     } else {
                         $rootScope.user = user
-                        callback(null, user)
+                        callback()
                     }
                 })
             },
-            function getLendings(user, callback) {
-                entu.getEntities({ definition: 'laenutus' }, user.id, user.token, $http, function(error, lendings) {
+            function getLendings(callback) {
+                entu.getEntities({ definition: 'laenutus' }, $rootScope.user.id, $rootScope.user.token, $http, function(error, entities) {
                     if(error) {
                         callback(error)
                     } else {
-                        callback(null, lendings)
+                        callback(null, entities)
                     }
                 })
             },
@@ -251,5 +274,62 @@ angular.module('lumeparkApp', ['ngRoute'])
             $rootScope.loading = false
         })
     }])
+
+
+
+//LENDING
+    .controller('lendingCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window) {
+        $rootScope.loading = true
+
+        async.waterfall([
+            function getUser(callback) {
+                entu.getUser($window.sessionStorage.getItem('user_id'), $window.sessionStorage.getItem('user_token'), $http, function(error, user) {
+                    if(error) {
+                        $rootScope.user = null
+                        callback(error)
+                    } else {
+                        $rootScope.user = user
+                        callback()
+                    }
+                })
+            },
+            function getLending(callback) {
+                entu.getEntity($routeParams.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
+                    if(error) {
+                        callback(error)
+                    } else {
+                        $scope.lending = entity
+                        callback()
+                    }
+                })
+            },
+            function getLendingChilds(callback) {
+                entu.getChilds($routeParams.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entities) {
+                    if(error) {
+                        callback(error)
+                    } else {
+                        callback(null, entities)
+                    }
+                })
+            },
+            function getLendingRows(lendingChilds, callback) {
+                $scope.lendingRows = []
+                async.each(lendingChilds, function(value) {
+                    entu.getEntity(value.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
+                        if(error) {
+                            callback(error)
+                        } else {
+                            $scope.lendingRows.push(entity)
+
+                            callback()
+                        }
+                    })
+                }, callback)
+            }
+        ], function(error) {
+            if(error) {
+                cl(error)
+            }
+            $rootScope.loading = false
         })
     }])
