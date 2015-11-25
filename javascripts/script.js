@@ -139,6 +139,10 @@ angular.module('lumeparkApp', ['ngRoute'])
     .config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
         $locationProvider.html5Mode(false)
         $routeProvider
+            .when('/', {
+                templateUrl: 'start',
+                controller: 'startCtrl'
+            })
             .when('/login', {
                 templateUrl: 'start',
                 controller: 'loginCtrl'
