@@ -4,7 +4,7 @@ script(type='text/ng-template', id='lending')
         form.row
             .form-group.col-xs-12.col-sm-6.col-md-4
                 label(for='laenutaja') Klient
-                select#laenutaja.form-control(ng-disabled='!customers', ng-options='c.name as c.name for c in customers | orderBy : "name"', ng-model='lending.laenutaja.value')
+                select#laenutaja.form-control(ng-disabled='!customers', ng-options='c.name as c.name group by c.name.substring(0, 1).toUpperCase() for c in customers | orderBy : "name"', ng-model='lending.laenutaja.value')
                     option(value='') -- vali klient --
 
             .form-group.col-xs-12.col-sm-6.col-md-6
