@@ -11,11 +11,11 @@ var cl = function(data) {
 // ENTU HELPERS
 var entu = {}
 
-entu.getUser = function(user_id, user_token, http, callback) {
+entu.getUser = function(userId, userToken, http, callback) {
     http.get(entuAPI + 'user', {
             headers: {
-                'X-Auth-UserId': user_id,
-                'X-Auth-Token': user_token
+                'X-Auth-UserId': userId,
+                'X-Auth-Token': userToken
             }
         })
         .success(function(data) {
@@ -36,11 +36,11 @@ entu.getUser = function(user_id, user_token, http, callback) {
         })
 }
 
-entu.getEntities = function(params, user_id, user_token, http, callback) {
+entu.getEntities = function(params, userId, userToken, http, callback) {
     http.get(entuAPI + 'entity', {
             headers: {
-                'X-Auth-UserId': user_id,
-                'X-Auth-Token': user_token
+                'X-Auth-UserId': userId,
+                'X-Auth-Token': userToken
             },
             params: params
         })
@@ -56,11 +56,11 @@ entu.getEntities = function(params, user_id, user_token, http, callback) {
         })
 }
 
-entu.getEntity = function(entity_id, user_id, user_token, http, callback) {
-    http.get(entuAPI + 'entity-' + entity_id, {
+entu.getEntity = function(entityId, userId, userToken, http, callback) {
+    http.get(entuAPI + 'entity-' + entityId, {
             headers: {
-                'X-Auth-UserId': user_id,
-                'X-Auth-Token': user_token
+                'X-Auth-UserId': userId,
+                'X-Auth-Token': userToken
             }
         })
         .success(function(data) {
@@ -82,18 +82,22 @@ entu.getEntity = function(entity_id, user_id, user_token, http, callback) {
         })
 }
 
-entu.getChilds = function(entity_id, user_id, user_token, http, callback) {
-    http.get(entuAPI + 'entity-' + entity_id +'/childs', {
+entu.getChilds = function(entityId, userId, userToken, http, callback) {
+    http.get(entuAPI + 'entity-' + entityId +'/childs', {
             headers: {
-                'X-Auth-UserId': user_id,
-                'X-Auth-Token': user_token
+                'X-Auth-UserId': userId,
+                'X-Auth-Token': userToken
             }
         })
         .success(function(data) {
             if(data.result) {
                 var entities = []
                 for (var i in data.result) {
+                    if(!data.result.hasOwnProperty(i)) continue
+
                     for (var n in data.result[i].entities) {
+                        if(!data.result[i].entities.hasOwnProperty(n)) continue
+
                         entities.push(data.result[i].entities[n])
                     }
                 }
@@ -107,11 +111,11 @@ entu.getChilds = function(entity_id, user_id, user_token, http, callback) {
         })
 }
 
-entu.getErply = function(method, params, user_id, user_token, http, callback) {
+entu.getErply = function(method, params, userId, userToken, http, callback) {
     http.get(erplyAPI + method, {
             headers: {
-                'X-Auth-UserId': user_id,
-                'X-Auth-Token': user_token
+                'X-Auth-UserId': userId,
+                'X-Auth-Token': userToken
             },
             params: params
         })
@@ -169,11 +173,11 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 // ANALYTICS
-    .run(['$rootScope', '$location', function($rootScope, $location) {
-        // $rootScope.$on('$routeChangeSuccess', function() {
-        //     ga('send', 'pageview', {page: $location.path(), title: $location.path().substring(1).replace('/', ' - ')})
-        // })
-    }])
+    // .run(['$rootScope', '$location', function($rootScope, $location) {
+    //     $rootScope.$on('$routeChangeSuccess', function() {
+    //         ga('send', 'pageview', {page: $location.path(), title: $location.path().substring(1).replace('/', ' - ')})
+    //     })
+    // }])
 
 
 
@@ -183,7 +187,7 @@ angular.module('lumeparkApp', ['ngRoute'])
         $rootScope.activeMenu = null
         $rootScope.entuUrl = entuAPI
 
-        entu.getUser($window.sessionStorage.getItem('user_id'), $window.sessionStorage.getItem('user_token'), $http, function(error, user) {
+        entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
             if(error) {
                 $rootScope.user = null
             } else {
@@ -222,8 +226,8 @@ angular.module('lumeparkApp', ['ngRoute'])
         $http.post(auth_url, {state: state})
             .success(function(data) {
                 $window.sessionStorage.clear()
-                $window.sessionStorage.setItem('user_id', data.result.user.id)
-                $window.sessionStorage.setItem('user_token', data.result.user.session_key)
+                $window.sessionStorage.setItem('userId', data.result.user.id)
+                $window.sessionStorage.setItem('userToken', data.result.user.session_key)
                 $window.location.href = '/'
             })
             .error(function(data) {
@@ -249,7 +253,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
         async.waterfall([
             function getUser(callback) {
-                entu.getUser($window.sessionStorage.getItem('user_id'), $window.sessionStorage.getItem('user_token'), $http, function(error, user) {
+                entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
                     if(error) {
                         $rootScope.user = null
                         callback(error)
@@ -299,7 +303,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
         async.series([
             function getUser(callback) {
-                entu.getUser($window.sessionStorage.getItem('user_id'), $window.sessionStorage.getItem('user_token'), $http, function(error, user) {
+                entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
                     if(error) {
                         $rootScope.user = null
                         callback(error)
@@ -323,7 +327,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                     },
                     function getLendingRows(callback) {
                         async.waterfall([
-                            function getLendingChilds(callback) {
+                            function getChilds(callback) {
                                 entu.getChilds($routeParams.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entities) {
                                     if(error) {
                                         callback(error)
@@ -332,7 +336,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                                     }
                                 })
                             },
-                            function getLendingRows(lendingChilds, callback) {
+                            function getEntities(lendingChilds, callback) {
                                 $scope.lendingRows = []
                                 async.each(lendingChilds, function(value) {
                                     entu.getEntity(value.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
@@ -393,8 +397,8 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 // $http.get(erplyAPI + 'saveSalesDocument', {
 //         headers: {
-//             'X-Auth-UserId': $window.sessionStorage.getItem('user_id'),
-//             'X-Auth-Token': $window.sessionStorage.getItem('user_token')
+//             'X-Auth-UserId': $window.sessionStorage.getItem('userId'),
+//             'X-Auth-Token': $window.sessionStorage.getItem('userToken')
 //         },
 //         params: {
 //             type: 'CASHINVOICE',
