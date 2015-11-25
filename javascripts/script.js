@@ -66,10 +66,14 @@ entu.getEntity = function(entityId, userId, userToken, http, callback) {
         .success(function(data) {
             if(data.result) {
                 var entity = {
-                    id: data.result.id,
-                    name: data.result.displayname,
-                    info: data.result.displayinfo,
-                    properties: data.result.properties
+                    _id: data.result.id,
+                    _name: data.result.displayname,
+                    _info: data.result.displayinfo
+                }
+                for(var p in data.result.properties) {
+                    if(!data.result.properties.hasOwnProperty(p)) { continue }
+                    if(!data.result.properties[p].values) { continue }
+                    entity[p] = data.result.properties[p].values[0]
                 }
 
                 callback(null, entity)
@@ -271,7 +275,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         if(error) {
                             callback(error)
                         } else {
-                            entity.status = entity.properties.staatus.values ? entity.properties.staatus.values[0].db_value : 'archive'
+                            entity.status = (entity.staatus) ? entity.staatus.value : 'archive'
                             if(!$routeParams.filter || $routeParams.filter === entity.status) {
                                 $scope.lendings.push(entity)
                             }
@@ -314,6 +318,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                             if(error) {
                                 callback(error)
                             } else {
+                                cl(entity)
                                 $scope.lending = entity
                                 callback()
                             }

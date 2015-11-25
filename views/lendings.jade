@@ -17,5 +17,5 @@ script(type='text/ng-template', id='lendings')
                 tbody
                     tr(ng-repeat='lending in lendings | filter : search | orderBy : "status" : true')
                         th
-                            a(ng-href='/#/lending/{{ lending.id }}') {{ lending.name }}
-                        td {{ lending.info }}
+                            a(ng-href='/#/lending/{{ lending._id }}') {{ lending._name }}
+                        td {{ lending._info }}
