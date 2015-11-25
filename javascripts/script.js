@@ -208,7 +208,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
         $http.post(entuAPI + 'user/auth', {state: state, redirect_url: $location.protocol() + '://' + location.host + '/#/auth'})
             .success(function(data) {
-                $window.sessionStorage.setItem('auth_url', data.result.auth_url)
+                $window.sessionStorage.setItem('authUrl', data.result.auth_url)
                 $window.location.href = data.result.auth_url
             })
             .error(function(data) {
@@ -220,10 +220,10 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 // AUTH AFTER LOGIN
     .controller('authCtrl', ['$http', '$window', function($http, $window) {
-        var auth_url = $window.sessionStorage.getItem('auth_url')
+        var authUrl = $window.sessionStorage.getItem('authUrl')
         var state = $window.sessionStorage.getItem('state')
 
-        $http.post(auth_url, {state: state})
+        $http.post(authUrl, {state: state})
             .success(function(data) {
                 $window.sessionStorage.clear()
                 $window.sessionStorage.setItem('userId', data.result.user.id)
