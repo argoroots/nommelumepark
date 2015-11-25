@@ -4,14 +4,8 @@ module.exports = function (grunt) {
             build: {
                 src: 'tmp'
             },
-        },
-        copy: {
-            fonts: {
-                cwd: 'bower_components/ionic/release/',
-                src: ['fonts/*.*'],
-                dest: '',
-                expand: true,
-                // flatten: true,
+            postbuild: {
+                src: ['tmp']
             }
         },
         jade: {
@@ -21,7 +15,7 @@ module.exports = function (grunt) {
                 },
                 files: [{
                     expand: true,
-                    cwd: 'source/views',
+                    cwd: 'views',
                     src: ['index.jade'],
                     dest: 'tmp',
                     ext: '.html'
@@ -31,52 +25,31 @@ module.exports = function (grunt) {
         stylus: {
             css: {
                 files: {
-                    'tmp/application.css': [
-                        'source/stylesheets/*.styl'
-                    ]
+                    'tmp/application.css': ['stylesheets/*.styl']
                 }
             }
         },
-        replace : {
-            frameworks: {
-                replacements: [{
-                    from: '../fonts/',
-                    to: './fonts/'
-                }],
-                src: ['bower_components/ionic/release/css/ionic.css'],
-                dest: 'tmp/ionic.css'
-            }
-        },
         cssmin : {
-            frameworks: {
+            application: {
                 options: {
                     keepSpecialComments: 0,
                 },
                 files: {
-                    'tmp/stylesheet.css': [
-                        'tmp/ionic.css',
-                        'tmp/application.css'
-                    ]
+                    'tmp/stylesheet.css': ['tmp/application.css']
                 }
             }
         },
         uglify: {
-            frameworks: {
+            application: {
                 files: {
-                    'tmp/javascript.js': [
-                        'bower_components/ionic/release/js/ionic.bundle.js',
-                        'bower_components/angular-resource/angular-resource.js',
-                        'source/javascripts/*.js'
-                    ]
+                    'tmp/javascript.js': ['bower_components/async/dist/async.js', 'javascripts/*.js']
                 }
             }
         },
         includereplace: {
             all: {
                 files: {
-                    'index.html': [
-                        'tmp/index.html'
-                    ]
+                    'index.html': ['tmp/index.html']
                 }
             }
         },
@@ -84,22 +57,22 @@ module.exports = function (grunt) {
             server: {
                 options: {
                     port: 4000,
-                    base: './',
+                    base: '',
                     hostname: 'localhost'
                 }
             }
         },
         watch: {
             stylesheets: {
-                files: 'source/**/*.styl',
-                tasks: ['stylus', 'cssmin', 'includereplace']
+                files: '**/*.styl',
+                tasks: ['stylus', 'cssmin:application', 'jade', 'includereplace']
             },
             scripts: {
-                files: 'source/**/*.js',
-                tasks: ['uglify', 'includereplace']
+                files: '**/*.js',
+                tasks: ['uglify:application', 'jade', 'includereplace']
             },
             jade: {
-                files: 'source/**/*.jade',
+                files: '**/*.jade',
                 tasks: ['jade', 'includereplace']
             },
         }
@@ -107,25 +80,28 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-clean')
     grunt.loadNpmTasks('grunt-contrib-connect')
-    grunt.loadNpmTasks('grunt-contrib-copy')
     grunt.loadNpmTasks('grunt-contrib-cssmin')
     grunt.loadNpmTasks('grunt-contrib-jade')
-    grunt.loadNpmTasks('grunt-contrib-less')
     grunt.loadNpmTasks('grunt-contrib-stylus')
     grunt.loadNpmTasks('grunt-contrib-uglify')
     grunt.loadNpmTasks('grunt-contrib-watch')
     grunt.loadNpmTasks('grunt-include-replace')
-    grunt.loadNpmTasks('grunt-text-replace')
+
+    grunt.registerTask(
+        'prepare',
+        'Compiles all of the assets and copies the files to the build directory.',
+        ['clean:build', 'jade', 'stylus', 'cssmin', 'uglify', 'includereplace']
+    )
 
     grunt.registerTask(
         'build',
         'Compiles all of the assets and copies the files to the build directory. Cleanup all mess.',
-        ['clean', 'copy', 'jade', 'stylus', 'replace', 'cssmin', 'uglify', 'includereplace']
+        ['prepare', 'clean:postbuild']
     )
 
     grunt.registerTask(
         'default',
         'Watches the project for changes, automatically builds them and runs a server.',
-        ['build', 'connect', 'watch']
+        ['prepare', 'connect', 'watch']
     )
 }

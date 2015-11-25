@@ -1,0 +1,19 @@
+script(type='text/ng-template', id='lendings')
+
+    form.row
+        .col-xs-12.col-sm-6.col-sm-offset-3
+            .form-group.has-feedback
+                input.form-control(type='search', ng-model='search')
+                span.glyphicon.glyphicon-search.form-control-feedback(aria-hidden="true")
+
+    .row(ng-if='lendings')
+        table.table.col-xs-12
+            tbody
+                tr(ng-repeat='lending in lendings | filter : search | orderBy : "status" : true')
+                    th
+                        a(ng-href='/#/lending/{{ lending.id }}') {{ lending.name }}
+                    td {{ lending.info }}
+
+    .row(ng-if='loading')
+        .col-xs-12.text-center
+            i.fa.fa-3x.fa-clock-o.fa-spin

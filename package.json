@@ -1,21 +1,18 @@
 {
-  "name": "Lumepark",
-  "version": "0.0.1",
-  "author": "Argo Roots <argo@roots.ee>",
-  "private": true,
-  "devDependencies": {
-    "grunt": "*",
-    "grunt-cli": "*",
-    "grunt-contrib-clean": "*",
-    "grunt-contrib-connect": "*",
-    "grunt-contrib-copy": "*",
-    "grunt-contrib-cssmin": "*",
-    "grunt-contrib-jade": "*",
-    "grunt-contrib-less": "*",
-    "grunt-contrib-stylus": "*",
-    "grunt-contrib-uglify": "*",
-    "grunt-contrib-watch": "*",
-    "grunt-include-replace": "*",
-    "grunt-text-replace": "*"
-  }
+    "name": "Lumepark",
+    "version": "0.2.0",
+    "author": "Argo Roots <argo@roots.ee>",
+    "private": true,
+    "devDependencies": {
+        "grunt-cli": "*",
+        "grunt-contrib-clean": "*",
+        "grunt-contrib-connect": "*",
+        "grunt-contrib-cssmin": "*",
+        "grunt-contrib-jade": "*",
+        "grunt-contrib-stylus": "*",
+        "grunt-contrib-uglify": "*",
+        "grunt-contrib-watch": "*",
+        "grunt-include-replace": "*",
+        "grunt": "*"
+   }
 }
