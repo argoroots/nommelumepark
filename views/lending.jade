@@ -1,70 +1,75 @@
 script(type='text/ng-template', id='lending')
     div(ng-if='user')
 
-        form.row
-            .form-group.col-xs-12.col-sm-6.col-md-4
-                label(for='laenutaja') Klient
-                select#laenutaja.form-control(ng-disabled='!customers', ng-options='c.name as c.name group by c.name.substring(0, 1).toUpperCase() for c in customers | orderBy : "name"', ng-model='lending.laenutaja.value')
-                    option(value='') -- vali klient --
+        .row
+            .col-xs-12.col-sm-8
 
-            .form-group.col-xs-12.col-sm-6.col-md-6
-                label(for='kirjeldus') Lisainfo
-                input#kirjeldus.form-control(type='text', ng-model='lending.kirjeldus.value')
+                form.row
+                    .form-group.col-xs-12.col-sm-6
+                        label(for='laenutaja') Klient
+                        select#laenutaja.form-control(ng-disabled='!customers', ng-options='c.name as c.name group by c.name.substring(0, 1).toUpperCase() for c in customers | orderBy : "name"', ng-model='lending.laenutaja.value')
+                            option(value='') -- vali klient --
 
-            .form-group.col-xs-6.col-md-2
-                label(for='erply') Erply #
-                input#erply.form-control(type='text', ng-model='lending.erply.value')
+                    .form-group.col-xs-12
+                        label(for='kirjeldus') Lisainfo
+                        input#kirjeldus.form-control(type='text', ng-model='lending.kirjeldus.value')
 
-        .row.spacer
+                .row.spacer
 
-        .row(ng-if='lendingRows')
-            .col-xs-12.col-sm-7
-                table.table
-                    thead
-                        tr
-                            th Varustus
-                            th Algus
-                            th Periood
-                            th Lõpp
-                            th &nbsp;
-                    tbody
-                        tr(ng-repeat='row in lendingRows | filter : search | orderBy : "status" : true')
-                            td {{ row.varustus.value }}
-                            td {{ row.info }}
-                            td 1h
-                            td {{ row.info }}
-                            td
-                                button.btn.btn-xs.btn-info.pull-right Tagasta
-                                //- button.btn.btn-xs.btn-success Väljasta
+                .row(ng-if='lendingRows')
+                    .col-xs-12
+                        table.table
+                            thead
+                                tr
+                                    th Varustus
+                                    th Algus
+                                    th Periood
+                                    th Lõpp
+                                    th &nbsp;
+                            tbody
+                                tr(ng-repeat='row in lendingRows | filter : search | orderBy : "status" : true')
+                                    td {{ row.varustus.value }}
+                                    td {{ row.info }}
+                                    td 1h
+                                    td {{ row.info }}
+                                    td
+                                        button.btn.btn-xs.btn-info.pull-right Tagasta
+                                        //- button.btn.btn-xs.btn-success Väljasta
+                                    //- tr
+                                    //-     td(colspan=5)
+                                    //-         input.form-control(type='text')
+
+            .col-xs-12.col-sm-4.col-xs-offset-0
+                .col-xs-12
+                    table.table
+                        caption
+                        thead
                             tr
-                                td(colspan=5)
-                                    input.form-control(type='text')
-
-            .col-xs-12.col-sm-4.col-xs-offset-0.col-sm-offset-1
-                table.table
-                    thead
-                        tr
-                            th(colspan=2) Hind
-                            th.text-right {{ sumErplyRows().toFixed(1).replace('.0', '.-') }}
-                            th &nbsp;
-                    tbody
-                        tr(ng-repeat='row in erplyRows | orderBy : "name" track by $index')
-                            td {{ row.name }}
-                            td.text-right
-                                span(ng-if='row.quantity > 1') {{ row.quantity }}&nbsp;x
-                            td.text-right {{ row.price.toFixed(1).replace('.0', '.-') }}
-                            td
-                                button.btn.btn-xs.btn-danger.pull-right(ng-click='deleteErplyRow(row.id)') Kustuta
-                        tr
-                            td(colspan=4)
-                                select.form-control(ng-disabled='!prices', ng-options='p.name for p in prices | orderBy : "name"', ng-model='newErplyPrice', ng-change='addErplyRow(newErplyPrice); newErplyPrice = null')
-                                    option(value='') -- lisa hind --
+                                th.warning ARVE
+                                th.warning.text-right(colspan=3)
+                                    span(ng-if='lending.erply.value') \#{{ lending.erply.value }}
+                        tbody
+                            tr.warning(ng-repeat='row in erplyRows | orderBy : "name" track by $index')
+                                td {{ row.name }}
+                                td.text-right
+                                    span(ng-if='row.quantity > 1') {{ row.quantity }}&nbsp;x
+                                td.text-right {{ row.price.toFixed(1).replace('.0', '.-') }}
+                                td(ng-if='!lending.erply.value')
+                                    button.btn.btn-xs.btn-danger.pull-right(ng-click='deleteErplyRow(row.id)') Kustuta
+                            tr.warning(ng-if='!lending.erply.value')
+                                td(colspan=4)
+                                    select.form-control(ng-disabled='!prices', ng-options='p.name for p in prices | orderBy : "name"', ng-model='newErplyPrice', ng-change='addErplyRow(newErplyPrice); newErplyPrice = null')
+                                        option(value='') -- lisa arve rida --
+                            tr.warning
+                                th KOKKU
+                                th.text-right(colspan=2) {{ sumErplyRows().toFixed(1).replace('.0', '.-') }}
+                                th(ng-if='!lending.erply.value') &nbsp;
 
         .row.spacer
 
         .row(ng-if='lendingRows')
-            button.btn.btn-lg.btn-info.col-xs-12.col-sm-4.col-sm-offset-4(ng-if='lending.erply.value') Tagasta kõik
-            button.btn.btn-lg.btn-warning.col-xs-12.col-sm-4.col-sm-offset-4(ng-if='!lending.erply.value') Väljasta kõik
+            button.btn.btn-lg.btn-info.col-xs-10.col-sm-8.col-lg-2.col-xs-offset-1.col-sm-offset-2.col-lg-offset-5(ng-if='lending.erply.value') Tagasta kõik
+            button.btn.btn-lg.btn-warning.col-xs-10.col-sm-8.col-lg-2.col-xs-offset-1.col-sm-offset-2.col-lg-offset-5(ng-if='!lending.erply.value') Väljasta kõik
 
         //-     button.btn.btn-primary.btn-lg(type='button', data-toggle='modal', data-target='#myModal') asdasd
         //-
