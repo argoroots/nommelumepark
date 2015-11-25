@@ -93,14 +93,11 @@ entu.getChilds = function(entityId, userId, userToken, http, callback) {
             if(data.result) {
                 var entities = []
                 for (var i in data.result) {
-                    if(data.result.hasOwnProperty(i)) {
-                        for (var n in data.result[i].entities) {
-                            if(data.result[i].entities.hasOwnProperty(n)) {
-                                entities.push(data.result[i].entities[n])
-                            }
-                        }
+                    if(!data.result.hasOwnProperty(i)) { continue }
+                    for (var n in data.result[i].entities) {
+                        if(!data.result[i].entities.hasOwnProperty(n)) { continue }
+                        entities.push(data.result[i].entities[n])
                     }
-
                 }
                 callback(null, entities)
             } else {
@@ -281,7 +278,9 @@ angular.module('lumeparkApp', ['ngRoute'])
                             callback(error)
                         } else {
                             entity.status = entity.properties.staatus.values ? entity.properties.staatus.values[0].db_value : 'archive'
-                            if(!$routeParams.filter || $routeParams.filter === entity.status) $scope.lendings.push(entity)
+                            if(!$routeParams.filter || $routeParams.filter === entity.status) {
+                                $scope.lendings.push(entity)
+                            }
 
                             callback()
                         }
