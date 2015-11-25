@@ -30,8 +30,8 @@ html(ng-app='lumeparkApp')
                         span.icon-bar
                         span.icon-bar
                         span.icon-bar
-                    a.navbar-brand(href='/#/') Nõmme Lumepark
-                    p.navbar-text(ng-if='user') {{ user.name }}
+                    a.navbar-brand(ng-if='!user', href='/#/') Nõmme Lumepark
+                    a.navbar-brand(ng-if='user', href='/#/') {{ user.name }}
 
                 #bs-example-navbar-collapse-1.collapse.navbar-collapse
                     ul.nav.navbar-nav.navbar-right(ng-if='user')
@@ -50,6 +50,10 @@ html(ng-app='lumeparkApp')
                     ul.nav.navbar-nav.navbar-right(ng-if='loading')
                         li.navbar-text
                             i.fa.fa-spinner.fa-spin
+
+        .container
+            .row
+                img#logo.col-xs-10.col-sm-8.col-md-6.col-lg-4.col-xs-offset-1.col-sm-offset-2.col-md-offset-3.col-lg-offset-4(src='/images/nommelumepark.png')
 
         .container
             div(ng-view)
