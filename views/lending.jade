@@ -5,9 +5,9 @@ script(type='text/ng-template', id='lending')
             label(for='laenutaja') Klient
             select#laenutaja.form-control()
                 option
-                option(ng-repeat='c in customers | orderBy : name') {{ c.name }}
+                option(ng-repeat='c in customers | orderBy : "name"') {{ c.name }}
 
-        .form-group.col-xs-12.col-sm-6.col-md-4
+        .form-group.col-xs-12.col-sm-6.col-md-6
             label(for='kirjeldus') Info
             input#kirjeldus.form-control(type='text')
 
@@ -15,30 +15,56 @@ script(type='text/ng-template', id='lending')
             label(for='erply') Erply viide
             input#erply.form-control(type='text')
 
-        .form-group.col-xs-6.col-md-2
-            label(for='laenutaja') Staatus
-            select#laenutaja.form-control()
-                option(value='bron') Broneering
-                option(value='out') Väljas
-                option(value='archive') Tagasi
+        //- .form-group.col-xs-6.col-md-2
+        //-     label(for='laenutaja') Staatus
+        //-     select#laenutaja.form-control()
+        //-         option(value='bron') Broneering
+        //-         option(value='out') Väljas
+        //-         option(value='archive') Tagasi
 
+    .row.spacer
 
     .row(ng-if='lendingRows')
-        .col-xs-12
+        .col-xs-7
             table.table
                 thead
                     tr
                         th Varustus
                         th Algus
                         th Lõpp
-                        th Staatus
+                        th &nbsp;
                 tbody
                     tr(ng-repeat='row in lendingRows | filter : search | orderBy : "status" : true')
                         td {{ row.name }}
                         td {{ row.info }}
                         td {{ row.info }}
                         td
-                            select#laenutaja.form-control.input-sm()
-                                option(value='bron') Broneering
-                                option(value='out') Väljas
-                                option(value='archive') Tagasi
+                            button.btn.btn-xs.btn-info.pull-right Tagasta
+                            //- button.btn.btn-xs.btn-success Väljasta
+                        tr
+                            td(colspan=4)
+                                select#laenutaja.form-control()
+                                    option
+
+        .col-xs-4.col-xs-offset-1
+            table.table
+                thead
+                    tr
+                        th(colspan=2) Erply hinnad
+                tbody
+                    tr(ng-repeat='row in erplyRows')
+                        td {{ row }}
+                        td
+                            button.btn.btn-xs.btn-danger.pull-right Kustuta
+                            //- button.btn.btn-xs.btn-success Väljasta
+                    tr
+                        td(colspan=2)
+                            select.form-control(ng-change='addErplyRow()', ng-model='newErplyRow')
+                                option
+                                option(ng-repeat='p in prices | orderBy : "name"', value='{{ p.name }}') {{ p.name }}
+
+    .row.spacer
+
+    .row(ng-if='lendingRows')
+        //- button.btn.btn-lg.btn-info.col-xs-12.col-sm-4.col-sm-offset-4 Tagasta kõik
+        button.btn.btn-lg.btn-success.col-xs-12.col-sm-4.col-sm-offset-4 Väljasta kõik

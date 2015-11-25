@@ -139,10 +139,6 @@ angular.module('lumeparkApp', ['ngRoute'])
     .config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
         $locationProvider.html5Mode(false)
         $routeProvider
-            .when('/', {
-                templateUrl: 'start',
-                controller: 'startCtrl'
-            })
             .when('/login', {
                 templateUrl: 'start',
                 controller: 'loginCtrl'
@@ -164,7 +160,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                 controller: 'lendingCtrl'
             })
             .otherwise({
-                redirectTo: '/'
+                redirectTo: '/lendings/bron'
             })
     }])
 
@@ -378,6 +374,16 @@ angular.module('lumeparkApp', ['ngRoute'])
             }
             $rootScope.loading = false
         })
+
+        $scope.addErplyRow = function() {
+            cl($scope.newErplyRow)
+            if(!$scope.erplyRows) {
+                $scope.erplyRows = []
+            }
+            $scope.erplyRows.push($scope.newErplyRow)
+            $scope.newErplyRow = null
+            cl($scope.erplyRows)
+        }
 
     }])
 
