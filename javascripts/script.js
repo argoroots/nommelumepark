@@ -375,14 +375,15 @@ angular.module('lumeparkApp', ['ngRoute'])
             $rootScope.loading = false
         })
 
-        $scope.addErplyRow = function() {
-            cl($scope.newErplyRow)
+        $scope.addErplyRow = function(value) {
+            if(!value) {
+                return
+            }
             if(!$scope.erplyRows) {
                 $scope.erplyRows = []
             }
-            $scope.erplyRows.push($scope.newErplyRow)
-            $scope.newErplyRow = null
-            cl($scope.erplyRows)
+            $scope.erplyRows.push(value)
+            $scope.newErplyRow = ''
         }
 
     }])
