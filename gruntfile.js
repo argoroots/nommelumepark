@@ -2,10 +2,18 @@ module.exports = function (grunt) {
     grunt.initConfig({
         clean: {
             build: {
-                src: 'tmp'
+                src: ['tmp', 'fonts']
             },
             postbuild: {
                 src: ['tmp']
+            }
+        },
+        copy: {
+            glyphicons: {
+                src: ['bower_components/bootstrap/fonts/*.*'],
+                dest: 'fonts',
+                expand: true,
+                flatten: true,
             }
         },
         jade: {
@@ -35,14 +43,24 @@ module.exports = function (grunt) {
                     keepSpecialComments: 0,
                 },
                 files: {
-                    'tmp/stylesheet.css': ['tmp/application.css']
+                    'tmp/stylesheet.css': [
+                        'bower_components/bootstrap/dist/css/bootstrap.css',
+                        'tmp/application.css'
+                    ]
                 }
             }
         },
         uglify: {
             application: {
                 files: {
-                    'tmp/javascript.js': ['bower_components/async/dist/async.js', 'javascripts/*.js']
+                    'tmp/javascript.js': [
+                        'bower_components/jquery/dist/jquery.js',
+                        'bower_components/bootstrap/dist/js/bootstrap.js',
+                        'bower_components/angular/angular.js',
+                        'bower_components/angular-route/angular-route.js',
+                        'bower_components/async/dist/async.js',
+                        'javascripts/*.js'
+                    ]
                 }
             }
         },
@@ -80,6 +98,7 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-clean')
     grunt.loadNpmTasks('grunt-contrib-connect')
+    grunt.loadNpmTasks('grunt-contrib-copy')
     grunt.loadNpmTasks('grunt-contrib-cssmin')
     grunt.loadNpmTasks('grunt-contrib-jade')
     grunt.loadNpmTasks('grunt-contrib-stylus')
@@ -90,7 +109,7 @@ module.exports = function (grunt) {
     grunt.registerTask(
         'prepare',
         'Compiles all of the assets and copies the files to the build directory.',
-        ['clean:build', 'jade', 'stylus', 'cssmin', 'uglify', 'includereplace']
+        ['clean:build', 'copy', 'jade', 'stylus', 'cssmin', 'uglify', 'includereplace']
     )
 
     grunt.registerTask(

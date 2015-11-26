@@ -4,11 +4,9 @@
     "author": "Argo Roots <argo@roots.ee>",
     "private": true,
     "devDependencies": {
-        "angular-resource": "1.*",
         "angular-route": "1.*",
         "angular": "1.*",
         "async": "1.*",
-        "bootstrap": "3.*",
-        "font-awesome": "4.*"
+        "bootstrap": "3.*"
     }
 }
