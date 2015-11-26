@@ -36,9 +36,9 @@ html(ng-app='lumeparkApp')
                         li
                             a.glyphicon.glyphicon-log-in(href='/#/login')
 
-                    ul.nav.navbar-nav.navbar-right(ng-if='loading')
+                    ul.nav.navbar-nav.navbar-right
                         li.navbar-text
-                            i.fa.fa-spinner.fa-spin
+                            img(spinner, src='/images/loader.gif')
 
         .container
             .row

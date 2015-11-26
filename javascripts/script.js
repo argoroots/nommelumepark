@@ -43,6 +43,27 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 
+// SPINNER
+    .directive('spinner', ['$http', function ($http) {
+        return {
+            restrict: 'A',
+            link: function (scope, elm, attrs) {
+                scope.isLoading = function () {
+                    return $http.pendingRequests.length > 0
+                }
+                scope.$watch(scope.isLoading, function (v) {
+                    if (v) {
+                        elm.show()
+                    } else {
+                        elm.hide()
+                    }
+                })
+            }
+        }
+    }])
+
+
+
 // ANALYTICS
     // .run(['$rootScope', '$location', function($rootScope, $location) {
     //     $rootScope.$on('$routeChangeSuccess', function() {
@@ -54,7 +75,6 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 // START
     .controller('startCtrl', ['$rootScope', '$http', '$window', function($rootScope, $http, $window) {
-        $rootScope.loading = true
         $rootScope.activeMenu = null
         $rootScope.entuUrl = entuAPI
 
@@ -64,7 +84,6 @@ angular.module('lumeparkApp', ['ngRoute'])
             } else {
                 $rootScope.user = user
             }
-            $rootScope.loading = false
         })
     }])
 
@@ -82,8 +101,8 @@ angular.module('lumeparkApp', ['ngRoute'])
                 $window.sessionStorage.setItem('authUrl', data.result.auth_url)
                 $window.location.href = data.result.auth_url
             })
-            .error(function(data) {
-                cl(data)
+            .error(function(error) {
+                cl(error)
             })
     }])
 
@@ -101,8 +120,8 @@ angular.module('lumeparkApp', ['ngRoute'])
                 $window.sessionStorage.setItem('userToken', data.result.user.session_key)
                 $window.location.href = '/'
             })
-            .error(function(data) {
-                cl(data)
+            .error(function(error) {
+                cl(error)
             })
     }])
 
@@ -119,7 +138,6 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 // LENDINGS
     .controller('lendingsCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window) {
-        $rootScope.loading = true
         $rootScope.activeMenu = $routeParams.filter
 
         async.waterfall([
@@ -157,7 +175,6 @@ angular.module('lumeparkApp', ['ngRoute'])
             if(error) {
                 cl(error)
             }
-            $rootScope.loading = false
         })
     }])
 
@@ -165,7 +182,6 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 //LENDING
     .controller('lendingCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window) {
-        $rootScope.loading = true
         $scope.newErplyRow = 0
 
         async.series([
@@ -253,7 +269,6 @@ angular.module('lumeparkApp', ['ngRoute'])
             if(error) {
                 cl(error)
             }
-            $rootScope.loading = false
         })
 
         $scope.sumErplyRows = function() {
