@@ -9,7 +9,7 @@ html(ng-app='lumeparkApp')
 
         link(rel='stylesheet', type='text/css', href='https://fonts.googleapis.com/css?family=Raleway:400,700,300')
         link(rel='stylesheet', type='text/css', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css')
-        link(rel='stylesheet', type='text/css', href='https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css')
+        link(rel='stylesheet', type='text/css', href='https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1-rc.1/css/select2.min.css')
 
         script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js')
         script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js')
@@ -39,12 +39,10 @@ html(ng-app='lumeparkApp')
                         li(ng-class='{ active: activeMenu === "out" }')
                             a(href='/#/lendings/out') Rendis
                         li
-                            a(href='/#/logout')
-                                i.fa.fa-sign-out
+                            a.glyphicon.glyphicon-log-out(href='/#/logout')
                     ul.nav.navbar-nav.navbar-right(ng-if='!user')
                         li
-                            a(href='/#/login')
-                                i.fa.fa-sign-in
+                            a.glyphicon.glyphicon-log-in(href='/#/login')
 
                     ul.nav.navbar-nav.navbar-right(ng-if='loading')
                         li.navbar-text
