@@ -1,6 +1,5 @@
 var entuAPI = 'https://nommelumepark.entu.ee/api2/'
 var entuAPI3 = 'https://auth.entu.ee/'
-var erplyAPI = 'https://nommelumepark.entu.ee/erply/'
 
 var cl = function(data) {
     console.log(data)
@@ -203,7 +202,6 @@ angular.module('lumeparkApp', ['ngRoute'])
                             if(error) {
                                 callback(error)
                             } else {
-                                cl(entity)
                                 $scope.lending = entity
                                 callback()
                             }
@@ -230,7 +228,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         ], callback)
                     },
                     function getErplyCustomers(callback) {
-                        entu.getErply('getCustomers', { recordsOnPage: 1000 }, $rootScope.user.id, $rootScope.user.token, $http, function(error, customers) {
+                        entu.getErply('getCustomers', {}, $rootScope.user.id, $rootScope.user.token, $http, function(error, customers) {
                             if(error) {
                                 callback(error)
                             } else {
@@ -246,7 +244,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         })
                     },
                     function getErplyPrices(callback) {
-                        entu.getErply('getProducts', { groupID: 3, recordsOnPage: 1000 }, $rootScope.user.id, $rootScope.user.token, $http, function(error, customers) {
+                        entu.getErply('getProducts', { groupID: 3 }, $rootScope.user.id, $rootScope.user.token, $http, function(error, customers) {
                             if(error) {
                                 callback(error)
                             } else {
@@ -317,25 +315,3 @@ angular.module('lumeparkApp', ['ngRoute'])
         }
 
     }])
-
-
-
-// $http.get(erplyAPI + 'saveSalesDocument', {
-//         headers: {
-//             'X-Auth-UserId': $window.sessionStorage.getItem('userId'),
-//             'X-Auth-Token': $window.sessionStorage.getItem('userToken')
-//         },
-//         params: {
-//             type: 'CASHINVOICE',
-//             pointOfSaleID: 2,
-//             customerID: 496,
-//             confirmInvoice: 0,
-//             productID2: 20,
-//             amount2: 1,
-//             productID3: 21,
-//             amount3: 1,
-//         }
-//     })
-//     .success(function(data) {
-//         cl(data)
-//     })

@@ -114,16 +114,15 @@ entu.getChilds = function(entityId, userId, userToken, http, callback) {
 }
 
 entu.getErply = function(method, params, userId, userToken, http, callback) {
-    http.get(erplyAPI + method, {
+    http.post(erplyAPI + method, params, {
             headers: {
                 'X-Auth-UserId': userId,
                 'X-Auth-Token': userToken
-            },
-            params: params
+            }
         })
         .success(function(data) {
-            if(data.records) {
-                callback(null, data.records)
+            if(data.result) {
+                callback(null, data.result)
             } else {
                 callback(data)
             }
@@ -132,3 +131,25 @@ entu.getErply = function(method, params, userId, userToken, http, callback) {
             callback(error)
         })
 }
+
+
+
+// $http.get(erplyAPI + 'saveSalesDocument', {
+//         headers: {
+//             'X-Auth-UserId': $window.sessionStorage.getItem('userId'),
+//             'X-Auth-Token': $window.sessionStorage.getItem('userToken')
+//         },
+//         params: {
+//             type: 'CASHINVOICE',
+//             pointOfSaleID: 2,
+//             customerID: 496,
+//             confirmInvoice: 0,
+//             productID2: 20,
+//             amount2: 1,
+//             productID3: 21,
+//             amount3: 1,
+//         }
+//     })
+//     .success(function(data) {
+//         cl(data)
+//     })
