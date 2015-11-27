@@ -23,7 +23,7 @@ script(type='text/ng-template', id='lendings')
                             th Lisainfo
                             th Erply #
                     tbody
-                        tr(ng-repeat='lending in lendings | filter : search | orderBy : "status" : true')
+                        tr(ng-repeat='lending in lendings | filter : search | orderBy : "status"')
                             th
                                 a(ng-href='/#/lending/{{ lending._id }}') {{ lending.laenutaja.value }}
                             th .

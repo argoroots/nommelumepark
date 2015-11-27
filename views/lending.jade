@@ -28,7 +28,7 @@ script(type='text/ng-template', id='lending')
                                     th Lõpp
                                     th &nbsp;
                             tbody
-                                tr(ng-repeat='row in lendingRows | filter : search | orderBy : "status" : true')
+                                tr(ng-repeat='row in lendingRows | filter : search | orderBy : "status"')
                                     td {{ row.varustus.value }}
                                     td {{ row.info }}
                                     td 1h
@@ -87,7 +87,7 @@ script(type='text/ng-template', id='lending')
                     .row(ng-if='foundItems.length > 0')
                         table.table.table-hover.col-xs-12
                             tbody
-                                tr.click(ng-repeat='i in foundItems | orderBy : "_name" : true', ng-click='selectItem(i)')
+                                tr.click(ng-repeat='i in foundItems | orderBy : "_name"', ng-click='selectItem(i)')
                                     td.col-xs-1.text-right {{ i.invnr.value }}
                                     td.col-xs-1.text-center(style='padding:3px')
                                         img.img-thumbnail.img-circle(ng-if='i.photo', ng-src='https://nommelumepark.entu.ee/api2/file-{{ i.photo.db_value }}', style='width:30px;height:30px;')
@@ -99,7 +99,6 @@ script(type='text/ng-template', id='lending')
                     .col-xs-12.text-center(ng-if='foundItems.length === 0') kas sisestasid otsingu õigesti?
                     .col-xs-12.text-center(ng-if='foundItems.length === 1') vali kas soovid seda laenutada
                     .col-xs-12.text-center(ng-if='foundItems.length > 1') vali millist neist soovid laenutada
-
 
     script.
         $('#select-item-modal').on('hidden.bs.modal', function (e) {
