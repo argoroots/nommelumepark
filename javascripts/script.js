@@ -161,7 +161,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         if(error) {
                             callback(error)
                         } else {
-                            entity.status = (entity.staatus) ? entity.staatus.value : 'archive'
+                            entity.status = entity.staatus ? entity.staatus.value : 'archive'
                             if(!$routeParams.filter || $routeParams.filter === entity.status) {
                                 $scope.lendings.push(entity)
                             }

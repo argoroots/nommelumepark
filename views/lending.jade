@@ -101,7 +101,7 @@ script(type='text/ng-template', id='lending')
                     .col-xs-12.text-center(ng-if='foundItems.length > 1') vali millist neist soovid laenutada
 
     script.
-        $('#select-item-modal').on('hidden.bs.modal', function (e) {
+        $('#select-item-modal').on('hidden.bs.modal', function() {
             $('#search-item').focus()
             $('#search-item').select()
         })
