@@ -132,6 +132,25 @@ entu.getErply = function(method, params, userId, userToken, http, callback) {
         })
 }
 
+entu.addEntity = function(parentEntityId, properties, userId, userToken, http, callback) {
+    http.post(entuAPI + 'entity-' + parentEntityId +'/childs', properties, {
+            headers: {
+                'X-Auth-UserId': userId,
+                'X-Auth-Token': userToken
+            }
+        })
+        .success(function(data) {
+            if(data.result) {
+                callback(null, data.result)
+            } else {
+                callback(data)
+            }
+        })
+        .error(function(error) {
+            callback(error)
+        })
+}
+
 
 
 // $http.get(erplyAPI + 'saveSalesDocument', {
