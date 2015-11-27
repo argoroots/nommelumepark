@@ -5,7 +5,6 @@ script(type='text/ng-template', id='lending')
 
         .row
             .col-xs-12.col-sm-8
-
                 form.row
                     .form-group.col-xs-12.col-sm-6
                         label(for='laenutaja') Klient
@@ -37,12 +36,11 @@ script(type='text/ng-template', id='lending')
                                     td
                                         button.btn.btn-xs.btn-info.pull-right Tagasta
                                         //- button.btn.btn-xs.btn-success Väljasta
-                                    //- tr
-                                    //-     td(colspan=5)
-                                    //-         input.form-control(type='text')
+                                    tr
+                                        td(colspan=5)
+                                            input#search-item.form-control(type='text', placeholder='-- lisa varustus --', ng-model='newItem.query' ng-keyup='searchItem($event)')
 
             .col-xs-12.col-sm-4.col-xs-offset-0
-
                     table.table
                         caption
                         thead
@@ -74,25 +72,30 @@ script(type='text/ng-template', id='lending')
                 button.btn.btn-lg.btn-info(ng-if='lending.erply.value') Tagasta kõik
                 button.btn.btn-lg.btn-warning(ng-if='!lending.erply.value') Väljasta kõik
 
-        //-     button.btn.btn-primary.btn-lg(type='button', data-toggle='modal', data-target='#myModal') asdasd
-        //-
-        //- #myModal.modal.fade(tabindex='-1', role='dialog')
-        //-     .modal-dialog
-        //-         .modal-content
-        //-             .modal-header
-        //-                 button.close(type='button', data-dismiss='modal', aria-label='Sulge')
-        //-                     span(aria-hidden='true') &times;
-        //-                 h4.modal-title Varustuse otsing ''
-        //-             .modal-body
-        //-                 .row
-        //-                     table.table.col-xs-12
-        //-                         tbody
-        //-                             tr(ng-repeat='row in lendingRows | filter : search | orderBy : "status" : true')
-        //-                                 td {{ row.name }}
-        //-                                 td {{ row.info }}
-        //-                                 td {{ row.info }}
-        //-                                 td
-        //-                                     button.btn.btn-xs.btn-info.pull-right tagasta
-        //-                                     //- button.btn.btn-xs.btn-success Väljasta
-
         .row.spacer
+
+    #select-item-modal.modal.fade(tabindex='-1', role='dialog')
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    button.close(type='button', data-dismiss='modal', aria-label='Sulge')
+                        span(aria-hidden='true') &times;
+                    h4.modal-title Varustu - {{ newItem.query }}
+                .modal-body
+                    .row(ng-if='foundItems.length > 0')
+                        table.table.col-xs-12
+                            tbody
+                                tr(ng-repeat='i in foundItems | orderBy : "_name" : true')
+                                    td {{ i._id }}
+                                    td
+                                        a(href='', ng-click='selectItem(i)') {{ i._name }}
+                    .row(ng-if='foundItems.length === 0')
+                        .col-xs-12.spacer
+                        .col-xs-12.text-center Varustust ei leitud!
+                        .col-xs-12.spacer
+
+    script.
+        $('#select-item-modal').on('hidden.bs.modal', function (e) {
+            $('#search-item').val('')
+            $('#search-item').focus()
+        })

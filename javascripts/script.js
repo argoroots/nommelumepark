@@ -181,7 +181,9 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 //LENDING
     .controller('lendingCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window) {
-        $scope.newErplyRow = 0
+        $scope.newItem = {
+            query: ''
+        }
 
         async.series([
             function getUser(callback) {
@@ -268,6 +270,52 @@ angular.module('lumeparkApp', ['ngRoute'])
                 cl(error)
             }
         })
+
+        $scope.searchItem = function(keyEvent) {
+            if(keyEvent.which !== 13) { return }
+
+            async.waterfall([
+                function getUser(callback) {
+                    entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
+                        if(error) {
+                            $rootScope.user = null
+                            callback(error)
+                        } else {
+                            $rootScope.user = user
+                            callback()
+                        }
+                    })
+                },
+                function getItems(callback) {
+                    entu.getEntities({ definition: 'varustus', query: $scope.newItem.query }, $rootScope.user.id, $rootScope.user.token, $http, callback)
+                },
+                function getEachItem(lendings, callback) {
+                    $scope.foundItems = []
+                    async.each(lendings, function(lending) {
+                        entu.getEntity(lending.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
+                            if(error) {
+                                callback(error)
+                            } else {
+                                $scope.foundItems.push(entity)
+                                callback()
+                            }
+                        })
+                    }, callback)
+                }
+            ], function(error) {
+                if(error) {
+                    cl(error)
+                } else {
+                    $('#select-item-modal').modal('show')
+                }
+            })
+
+        }
+
+        $scope.selectItem = function(item) {
+            $('#select-item-modal').modal('hide')
+            $scope.lendingRows.push(item)
+        }
 
         $scope.sumErplyRows = function() {
             var sum = 0

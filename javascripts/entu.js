@@ -144,10 +144,12 @@ entu.getErply = function(method, params, userId, userToken, http, callback) {
 //             pointOfSaleID: 2,
 //             customerID: 496,
 //             confirmInvoice: 0,
+//             productID1: 19,
+//             amount1: 2,
 //             productID2: 20,
 //             amount2: 1,
 //             productID3: 21,
-//             amount3: 1,
+//             amount3: 4,
 //         }
 //     })
 //     .success(function(data) {
