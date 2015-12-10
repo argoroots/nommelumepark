@@ -8,7 +8,7 @@ script(type='text/ng-template', id='lending')
                 form.row
                     .form-group.col-xs-12.col-sm-6
                         label(for='laenutaja') Klient
-                        select#laenutaja.form-control(ng-disabled='!customers', ng-options='c.name as c.name group by c.name.substring(0, 1).toUpperCase() for c in customers | orderBy : "name"', ng-model='lending.laenutaja.value')
+                        select#laenutaja.form-control(ng-disabled='!sData.customers', ng-options='c.name as c.name group by c.name.substring(0, 1).toUpperCase() for c in sData.customers | orderBy : "name"', ng-model='lending.laenutaja.value')
                             option(value='') -- vali klient --
 
                     .form-group.col-xs-12
@@ -38,7 +38,7 @@ script(type='text/ng-template', id='lending')
                                         //- button.btn.btn-xs.btn-success Väljasta
                                     tr
                                         td(colspan=5)
-                                            input#search-item.form-control(type='text', placeholder='-- lisa varustus --', ng-model='newItem.query' ng-keyup='searchItem($event)')
+                                            input#search-item.form-control(type='text', placeholder='-- lisa varustus --', ng-model='sData.addLendingRowQuery' ng-keyup='searchItem($event)')
 
             .col-xs-12.col-sm-4.col-xs-offset-0
                     table.table
@@ -49,16 +49,16 @@ script(type='text/ng-template', id='lending')
                                 th.warning.text-right(colspan=3)
                                     span(ng-if='lending.erply.value') \#{{ lending.erply.value }}
                         tbody
-                            tr.warning(ng-repeat='row in erplyRows | orderBy : "name" track by $index')
+                            tr.warning(ng-repeat='row in lending.prices | orderBy : "name" track by $index')
                                 td {{ row.name }}
                                 td.text-right
                                     span(ng-if='row.quantity > 1') {{ row.quantity }}&nbsp;x
                                 td.text-right {{ row.price.toFixed(1).replace('.0', '.-') }}
                                 td(ng-if='!lending.erply.value')
-                                    button.btn.btn-xs.btn-danger.pull-right(ng-click='deleteErplyRow(row.id)') Kustuta
+                                    button.btn.btn-xs.btn-danger.pull-right(ng-click='deleteLendingPrice(row.id)') Kustuta
                             tr.warning(ng-if='!lending.erply.value')
                                 td(colspan=4)
-                                    select.form-control(ng-disabled='!prices', ng-options='p.name for p in prices | orderBy : "name"', ng-model='newErplyPrice', ng-change='addErplyRow(newErplyPrice); newErplyPrice = null')
+                                    select.form-control(ng-disabled='!sData.prices', ng-options='p.name for p in sData.prices | orderBy : "name"', ng-model='newLendingPrice', ng-change='addLendingPrice(newLendingPrice); newLendingPrice = null')
                                         option(value='') -- lisa arve rida --
                             tr.warning
                                 th KOKKU
@@ -80,14 +80,14 @@ script(type='text/ng-template', id='lending')
                 .modal-header
                     button.close(type='button', data-dismiss='modal', aria-label='Sulge')
                         .glyphicon.glyphicon-remove-sign
-                    h4.modal-title(ng-if='foundItems.length === 0') Otsing '{{newItem.query }}' ei andnud ühtegi tulemust
-                    h4.modal-title(ng-if='foundItems.length === 1') Otsing '{{newItem.query }}' andis ühe tulemuse
-                    h4.modal-title(ng-if='foundItems.length > 1') Otsing '{{newItem.query }}' andis {{ foundItems.length }} tulemust
+                    h4.modal-title(ng-if='foundItems.length === 0') Otsing '{{ sData.addLendingRowQuery }}' ei andnud ühtegi tulemust
+                    h4.modal-title(ng-if='foundItems.length === 1') Otsing '{{ sData.addLendingRowQuery }}' andis ühe tulemuse
+                    h4.modal-title(ng-if='foundItems.length > 1') Otsing '{{ sData.addLendingRowQuery }}' andis {{ foundItems.length }} tulemust
                 .modal-body
                     .row(ng-if='foundItems.length > 0')
                         table.table.table-hover.col-xs-12
                             tbody
-                                tr.click(ng-repeat='i in foundItems | orderBy : "_name"', ng-click='selectItem(i)')
+                                tr.click(ng-repeat='i in foundItems | orderBy : "_name"', ng-click='addLendingRow(i)')
                                     td.col-xs-1.text-right {{ i.invnr.value }}
                                     td.col-xs-1.text-center(style='padding:3px')
                                         img.img-thumbnail.img-circle(ng-if='i.photo', ng-src='https://nommelumepark.entu.ee/api2/file-{{ i.photo.db_value }}', style='width:30px;height:30px;')

@@ -181,8 +181,10 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 //LENDING
     .controller('lendingCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window) {
-        $scope.newItem = {
-            query: ''
+        $scope.sData = {
+            customers: [],
+            prices: [],
+            addLendingRowQuery: ''
         }
 
         async.series([
@@ -234,9 +236,9 @@ angular.module('lumeparkApp', ['ngRoute'])
                             if(error) {
                                 callback(error)
                             } else {
-                                $scope.customers = []
+                                $scope.sData.customers = []
                                 async.each(customers, function(item, callback) {
-                                    $scope.customers.push({
+                                    $scope.sData.customers.push({
                                         id: item.customerID,
                                         name: item.fullName.trim()
                                     })
@@ -250,9 +252,9 @@ angular.module('lumeparkApp', ['ngRoute'])
                             if(error) {
                                 callback(error)
                             } else {
-                                $scope.prices = []
+                                $scope.sData.prices = []
                                 async.each(customers, function(item, callback) {
-                                    $scope.prices.push({
+                                    $scope.sData.prices.push({
                                         id: item.productID,
                                         name: item.name.trim(),
                                         price: item.priceWithVat,
@@ -287,7 +289,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                     })
                 },
                 function getItems(callback) {
-                    entu.getEntities({ definition: 'varustus', query: $scope.newItem.query }, $rootScope.user.id, $rootScope.user.token, $http, callback)
+                    entu.getEntities({ definition: 'varustus', query: $scope.sData.addLendingRowQuery }, $rootScope.user.id, $rootScope.user.token, $http, callback)
                 },
                 function getEachItem(lendings, callback) {
                     $scope.foundItems = []
@@ -312,50 +314,84 @@ angular.module('lumeparkApp', ['ngRoute'])
 
         }
 
-        $scope.selectItem = function(item) {
+        $scope.addLendingRow = function(item) {
             $('#select-item-modal').modal('hide')
-            $scope.lendingRows.push(item)
+
+            async.waterfall([
+                function getUser(callback) {
+                    entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
+                        if(error) {
+                            $rootScope.user = null
+                            callback(error)
+                        } else {
+                            $rootScope.user = user
+                            callback()
+                        }
+                    })
+                },
+                // function addLendingRow(callback) {
+                //     entu.addEntity(614, { definition: 'laenutus', 'laenutuse-rida-varustus': item._id }, $rootScope.user.id, $rootScope.user.token, $http, callback)
+                // },
+                // function getEachItem(lendings, callback) {
+                //     $scope.foundItems = []
+                //     async.each(lendings, function(lending) {
+                //         entu.getEntity(lending.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
+                //             if(error) {
+                //                 callback(error)
+                //             } else {
+                //                 $scope.foundItems.push(entity)
+                //                 callback()
+                //             }
+                //         })
+                //     }, callback)
+                // }
+            ], function(error) {
+                if(error) {
+                    cl(error)
+                }
+            })
         }
 
         $scope.sumErplyRows = function() {
             var sum = 0
-            for(var i in $scope.erplyRows) {
-                if(!$scope.erplyRows.hasOwnProperty(i)) { continue }
-                sum = sum + $scope.erplyRows[i].price * $scope.erplyRows[i].quantity
+            for(var i in $scope.lending.prices) {
+                if(!$scope.lending.prices.hasOwnProperty(i)) { continue }
+                sum = sum + $scope.lending.prices[i].price * $scope.lending.prices[i].quantity
             }
             return sum
         }
 
-        $scope.addErplyRow = function(value) {
-            $scope.newErplyPrice = { id: 0, name: "-- Lisa uus --" }
-            if(!value) {
-                return
+        $scope.addLendingPrice = function(value) {
+            if(!value) { return }
+
+            $scope.newLendingPrice = {
+                id: 0,
+                name: '-- Lisa uus --'
             }
-            if(!$scope.erplyRows) {
-                $scope.erplyRows = []
+            if(!$scope.lending.prices) {
+                $scope.lending.prices = []
             }
 
-            for(var i in $scope.erplyRows) {
-                if(!$scope.erplyRows.hasOwnProperty(i)) { continue }
-                if($scope.erplyRows[i].id === value.id) {
-                    $scope.erplyRows[i].quantity = $scope.erplyRows[i].quantity + 1
+            for(var i in $scope.lending.prices) {
+                if(!$scope.lending.prices.hasOwnProperty(i)) { continue }
+                if($scope.lending.prices[i].id === value.id) {
+                    $scope.lending.prices[i].quantity = $scope.lending.prices[i].quantity + 1
                     return
                 }
             }
-            $scope.erplyRows.push(value)
+            $scope.lending.prices.push(value)
         }
 
-        $scope.deleteErplyRow = function(value) {
-            if(!value) {
-                return
-            }
-            for(var i in $scope.erplyRows) {
-                if(!$scope.erplyRows.hasOwnProperty(i)) { continue }
-                if($scope.erplyRows[i].id === parseInt(value, 10)) {
-                    if($scope.erplyRows[i].quantity > 1) {
-                        $scope.erplyRows[i].quantity = $scope.erplyRows[i].quantity - 1
+        $scope.deleteLendingPrice = function(value) {
+            if(!value) { return }
+
+            for(var i in $scope.lending.prices) {
+                if(!$scope.lending.prices.hasOwnProperty(i)) { continue }
+                if($scope.lending.prices[i].id === parseInt(value, 10)) {
+                    if($scope.lending.prices[i].quantity > 1) {
+                        $scope.lending.prices[i].quantity = $scope.lending.prices[i].quantity - 1
                     } else {
-                        $scope.erplyRows.splice(i, 1)
+                        $scope.lending.prices.splice(i, 1)
                     }
                     break
                 }
