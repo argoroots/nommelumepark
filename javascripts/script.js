@@ -93,6 +93,7 @@ angular.module('lumeparkApp', ['ngRoute'])
     .controller('startCtrl', ['$rootScope', '$http', '$window', function($rootScope, $http, $window) {
         if(!$rootScope.rData) { $rootScope.rData = {} }
 
+        $rootScope.rData.pageTitle = null
         $rootScope.rData.activeMenu = null
 
         entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
@@ -158,6 +159,7 @@ angular.module('lumeparkApp', ['ngRoute'])
         if(!$rootScope.rData) { $rootScope.rData = {} }
 
         $rootScope.rData.activeMenu = $routeParams.filter
+        $rootScope.rData.pageTitle = $routeParams.filter === 'bron' ? 'Broneeringud' : 'Rendis'
 
         $scope.sData = {
             lendings: []
@@ -207,6 +209,8 @@ angular.module('lumeparkApp', ['ngRoute'])
     .controller('lendingCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$location', '$window', function($scope, $rootScope, $http, $routeParams, $location, $window) {
         if(!$rootScope.rData) { $rootScope.rData = {} }
 
+        $rootScope.rData.pageTitle = $routeParams.id === 'new' ? 'Uus' : '#' + $routeParams.id
+
         $scope.sData = {
             lending: {},
             oldLending: {},
@@ -240,6 +244,8 @@ angular.module('lumeparkApp', ['ngRoute'])
                             if(error) {
                                 callback(error)
                             } else {
+                                $rootScope.rData.pageTitle = $routeParams.id === 'new' ? 'Uus' : '#' + entity._id
+
                                 $scope.sData.lending = entity
                                 for (var i in $scope.sData.lending) {
                                     if (!$scope.sData.lending.hasOwnProperty(i)) { continue }
@@ -362,6 +368,8 @@ angular.module('lumeparkApp', ['ngRoute'])
                         if(error) {
                             callback(error)
                         } else {
+                            $rootScope.rData.pageTitle = '#' + entity._id
+
                             $scope.sData.lending = entity
                             for (var i in $scope.sData.lending) {
                                 if (!$scope.sData.lending.hasOwnProperty(i)) { continue }
