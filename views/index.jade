@@ -16,29 +16,23 @@ html(ng-app='lumeparkApp')
     body
         nav.navbar.navbar-default.navbar-fixed-top
             .container
-                .navbar-header
-                    .button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1', aria-expanded='false')
-                        span.sr-only Toggle navigation
-                        span.icon-bar
-                        span.icon-bar
-                        span.icon-bar
+                .navbar-left
                     a.navbar-brand(ng-if='rData.user', href='/#/') {{ rData.user.name }}
 
-                #bs-example-navbar-collapse-1.collapse.navbar-collapse
-                    ul.nav.navbar-nav.navbar-right(ng-if='rData.user')
-                        li(ng-class='{ active: rData.activeMenu === "bron" }')
-                            a(href='/#/lendings/bron') Broneeringud
-                        li(ng-class='{ active: rData.activeMenu === "out" }')
-                            a(href='/#/lendings/out') Rendis
-                        li
-                            a.glyphicon.glyphicon-log-out(href='/#/logout')
-                    ul.nav.navbar-nav.navbar-right(ng-if='!rData.user')
-                        li
-                            a.glyphicon.glyphicon-log-in(href='/#/login')
+                ul.nav.navbar-nav.navbar-right(ng-if='rData.user')
+                    li(ng-class='{ active: rData.activeMenu === "bron" }')
+                        a(href='/#/lendings/bron') Broneeringud
+                    li(ng-class='{ active: rData.activeMenu === "out" }')
+                        a(href='/#/lendings/out') Rendis
+                    li
+                        a.glyphicon.glyphicon-log-out(href='/#/logout')
+                ul.nav.navbar-nav.navbar-right(ng-if='!rData.user')
+                    li
+                        a.glyphicon.glyphicon-log-in(href='/#/login')
 
-                    ul.nav.navbar-nav.navbar-right
-                        li.navbar-text
-                            img(spinner, src='/images/loader.gif')
+                ul.nav.navbar-nav.navbar-right
+                    li.navbar-text
+                        img(spinner, src='/images/loader.gif')
 
         .container
             .row
