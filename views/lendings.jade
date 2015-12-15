@@ -24,7 +24,7 @@ script(type='text/ng-template', id='lendings')
                     tbody
                         tr(ng-repeat='lending in sData.lendings | filter : search | orderBy : "status"')
                             th
-                                a(ng-href='/#/lending/{{ lending._id }}') {{ lending.laenutaja.value }}
+                                a(ng-href='/#/lending/{{ lending._id }}') {{ lending.laenutaja.value || '...' }}
                             th .
                             th .
                             td {{ lending.kirjeldus.value }}
