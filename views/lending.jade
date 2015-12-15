@@ -16,12 +16,12 @@ script(type='text/ng-template', id='lending')
                         input#kirjeldus.form-control(type='text', ng-model='sData.lending.kirjeldus.value')
 
                     .form-group.col-xs-12.col-sm-6
-                        label(for='kirjeldus') Broneeringu algus
-                        input#kirjeldus.form-control(type='text', ng-model='sData.lending.kirjeldus.value', placeholder='nt. 31.12.2015 14:00')
+                        label(for='algus') Broneeringu algus
+                        input#algus.form-control(type='text', ng-model='sData.lending.algus.value', placeholder='nt. 31.12.2015 14:00')
 
                     .form-group.col-xs-12.col-sm-6
-                        label(for='laenutaja') Broneeringu kestvus
-                        select#laenutaja.form-control
+                        label(for='kestvus') Broneeringu kestvus
+                        select#kestvus.form-control(ng-model='sData.lending.kestvus.value')
                             option(value='') -- vali kestvus --
                             option(value='1h') 1h
                             option(value='3h') 3h
@@ -29,7 +29,7 @@ script(type='text/ng-template', id='lending')
 
                 .row.spacer
 
-                .row(ng-if='lendingRows')
+                .row
                     .col-xs-12
                         table.table
                             thead
@@ -85,7 +85,7 @@ script(type='text/ng-template', id='lending')
                 button.btn.btn-lg.btn-warning(ng-if='!sData.lending.erply.value') Väljasta kõik
 
         .row.spacer
-            pre.col-xs-12 {{ sData | json }}
+            //- pre.col-xs-12 {{ sData.lending | json }}
 
     #select-item-modal.modal.fade(tabindex='-1', role='dialog')
         .modal-dialog
@@ -93,14 +93,14 @@ script(type='text/ng-template', id='lending')
                 .modal-header
                     button.close(type='button', data-dismiss='modal', aria-label='Sulge')
                         .glyphicon.glyphicon-remove-sign
-                    h4.modal-title(ng-if='foundItems.length === 0') Otsing '{{ sData.addLendingRowQuery }}' ei andnud ühtegi tulemust
-                    h4.modal-title(ng-if='foundItems.length === 1') Otsing '{{ sData.addLendingRowQuery }}' andis ühe tulemuse
-                    h4.modal-title(ng-if='foundItems.length > 1') Otsing '{{ sData.addLendingRowQuery }}' andis {{ foundItems.length }} tulemust
+                    h4.modal-title(ng-if='sData.foundItems.length === 0') Otsing '{{ sData.addLendingRowQuery }}' ei andnud ühtegi tulemust
+                    h4.modal-title(ng-if='sData.foundItems.length === 1') Otsing '{{ sData.addLendingRowQuery }}' andis ühe tulemuse
+                    h4.modal-title(ng-if='sData.foundItems.length > 1') Otsing '{{ sData.addLendingRowQuery }}' andis {{ sData.foundItems.length }} tulemust
                 .modal-body
-                    .row(ng-if='foundItems.length > 0')
+                    .row(ng-if='sData.foundItems.length > 0')
                         table.table.table-hover.col-xs-12
                             tbody
-                                tr.click(ng-repeat='i in foundItems | orderBy : "_name"', ng-click='addLendingRow(i)')
+                                tr.click(ng-repeat='i in sData.foundItems | orderBy : "_name"', ng-click='addLendingRow(i)')
                                     td.col-xs-1.text-right {{ i.invnr.value }}
                                     td.col-xs-1.text-center(style='padding:3px')
                                         img.img-thumbnail.img-circle(ng-if='i.photo', ng-src='https://nommelumepark.entu.ee/api2/file-{{ i.photo.db_value }}', style='width:30px;height:30px;')
@@ -109,9 +109,9 @@ script(type='text/ng-template', id='lending')
                                         br
                                         small {{ i.seisukord.value }}
                 .modal-footer
-                    .col-xs-12.text-center(ng-if='foundItems.length === 0') kas sisestasid otsingu õigesti?
-                    .col-xs-12.text-center(ng-if='foundItems.length === 1') vali kas soovid seda laenutada
-                    .col-xs-12.text-center(ng-if='foundItems.length > 1') vali millist neist soovid laenutada
+                    .col-xs-12.text-center(ng-if='sData.foundItems.length === 0') kas sisestasid otsingu õigesti?
+                    .col-xs-12.text-center(ng-if='sData.foundItems.length === 1') vali kas soovid seda laenutada
+                    .col-xs-12.text-center(ng-if='sData.foundItems.length > 1') vali millist neist soovid laenutada
 
     script.
         $('#select-item-modal').on('hidden.bs.modal', function() {
