@@ -348,6 +348,9 @@ angular.module('lumeparkApp', ['ngRoute'])
                         definition: 'laenutuse-rida',
                         'laenutuse-rida-varustus': item._id
                     }
+                    if($scope.sData.lending.algus) { lendingRow['laenutuse-rida-bronnialgus'] = $scope.sData.lending.algus.db_value }
+                    if($scope.sData.lending.kestvus) { lendingRow['laenutuse-rida-kestus'] = $scope.sData.lending.kestvus.value }
+
                     entu.addEntity($scope.sData.lending._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
                 },
                 function getNewLendingRow(lendingRow, callback) {

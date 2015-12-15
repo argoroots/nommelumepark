@@ -42,12 +42,12 @@ script(type='text/ng-template', id='lending')
                             tbody
                                 tr(ng-repeat='row in sData.lendingRows | filter : search | orderBy : "status"')
                                     td {{ row.varustus.value }}
-                                    td {{ row.info }}
-                                    td 1h
-                                    td {{ row.info }}
-                                    td
-                                        button.btn.btn-xs.btn-info.pull-right Tagasta
-                                        //- button.btn.btn-xs.btn-success Väljasta
+                                    td {{ row.laenutuse-rida-bronnialgus.value }}
+                                    td {{ row.laenutuse-rida-kestus.value }}
+                                    td {{ row.laenutuse-rida-bronnil6pp.value }}
+                                    td.text-right
+                                        //- button.btn.btn-xs.btn-info.pull-right Tagasta
+                                        button.btn.btn-xs.btn-warning Väljasta
                                     tr
                                         td(colspan=5)
                                             input#search-item.form-control(type='text', placeholder='-- lisa varustus --', ng-model='sData.addLendingRowQuery' ng-keyup='searchItem($event)')
@@ -79,10 +79,10 @@ script(type='text/ng-template', id='lending')
 
         .row.spacer
 
-        .row(ng-if='lendingRows')
+        .row(ng-if='sData.lendingRows.length > 0')
             .col-xs-12.text-center
                 button.btn.btn-lg.btn-info(ng-if='sData.lending.erply.value') Tagasta kõik
-                button.btn.btn-lg.btn-warning(ng-if='!sData.lending.erply.value') Väljasta kõik
+                button.btn.btn-lg.btn-warning(ng-if='!sData.lending.erply.value') Väljasta kõik ja loo arve
 
         .row.spacer
             //- pre.col-xs-12 {{ sData.lendingRows | json }}
