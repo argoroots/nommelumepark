@@ -40,7 +40,7 @@ script(type='text/ng-template', id='lending')
                                     th Lõpp
                                     th &nbsp;
                             tbody
-                                tr(ng-repeat='row in sData.lendingRows | filter : search | orderBy : "status"')
+                                tr(ng-repeat='row in sData.lendingRows | filter : search | orderBy : "varustus.value"')
                                     td {{ row.varustus.value }}
                                     td {{ row.laenutuse-rida-bronnialgus.value }}
                                     td {{ row.laenutuse-rida-kestus.value }}
