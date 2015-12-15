@@ -60,12 +60,15 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 
-// ANALYTICS
-    // .run(['$rootScope', '$location', function($rootScope, $location) {
-    //     $rootScope.rData.$on('$routeChangeSuccess', function() {
-    //         ga('send', 'pageview', {page: $location.path(), title: $location.path().substring(1).replace('/', ' - ')})
-    //     })
-    // }])
+// GOOGLE ANALYTICS
+    .run(['$rootScope', '$location', function($rootScope, $location) {
+        $rootScope.$on('$routeChangeSuccess', function() {
+            ga('send', 'pageview', {
+                page: $location.path(),
+                title: $location.path().substring(1).replace('/', ' - ')
+            })
+        })
+    }])
 
 
 
