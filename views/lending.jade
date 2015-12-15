@@ -8,20 +8,20 @@ script(type='text/ng-template', id='lending')
                 form.row
                     .form-group.col-xs-12.col-sm-6
                         label(for='laenutaja') Klient
-                        select#laenutaja.form-control(ng-disabled='sData.customers.length < 1', ng-options='c.name as c.name group by c.name.substring(0, 1).toUpperCase() for c in sData.customers | orderBy : "name"', ng-model='sData.lending.laenutaja.value')
+                        select#laenutaja.form-control(ng-disabled='sData.customers.length < 1', ng-options='c.name as c.name group by c.name.substring(0, 1).toUpperCase() for c in sData.customers | orderBy : "name"', ng-model='sData.lending.laenutaja.db_value', ng-change='saveLending("laenutaja")')
                             option(value='') -- vali klient --
 
                     .form-group.col-xs-12
                         label(for='kirjeldus') Lisainfo
-                        input#kirjeldus.form-control(type='text', ng-model='sData.lending.kirjeldus.value')
+                        input#kirjeldus.form-control(type='text', ng-model='sData.lending.kirjeldus.db_value', ng-blur='saveLending("kirjeldus")')
 
                     .form-group.col-xs-12.col-sm-6
                         label(for='algus') Broneeringu algus
-                        input#algus.form-control(type='text', ng-model='sData.lending.algus.value', placeholder='nt. 31.12.2015 14:00')
+                        input#algus.form-control(type='text', ng-model='sData.lending.algus.db_value', ng-blur='saveLending("algus")', placeholder='nt. 31.12.2015 14:00')
 
                     .form-group.col-xs-12.col-sm-6
                         label(for='kestvus') Broneeringu kestvus
-                        select#kestvus.form-control(ng-model='sData.lending.kestvus.value')
+                        select#kestvus.form-control(ng-model='sData.lending.kestvus.db_value', ng-change='saveLending("kestvus")')
                             option(value='') -- vali kestvus --
                             option(value='1h') 1h
                             option(value='3h') 3h
@@ -50,7 +50,7 @@ script(type='text/ng-template', id='lending')
                                         button.btn.btn-xs.btn-warning Väljasta
                                     tr
                                         td(colspan=5)
-                                            input#search-item.form-control(type='text', placeholder='-- lisa varustus --', ng-model='sData.addLendingRowQuery' ng-keyup='searchItem($event)')
+                                            input#search-item.form-control(type='text', placeholder='-- lisa varustus --', ng-model='sData.addLendingRowQuery' ng-keyup='searchLendingRowItem($event)')
 
             .col-xs-12.col-sm-4.col-xs-offset-0
                     table.table
@@ -85,7 +85,7 @@ script(type='text/ng-template', id='lending')
                 button.btn.btn-lg.btn-warning(ng-if='!sData.lending.erply.value') Väljasta kõik ja loo arve
 
         .row.spacer
-            //- pre.col-xs-12 {{ sData.lendingRows | json }}
+            pre.col-xs-12 {{ sData.lending | json }}
 
     #select-item-modal.modal.fade(tabindex='-1', role='dialog')
         .modal-dialog
