@@ -4,6 +4,19 @@ var cl = function(data) {
 
 
 
+var parseDate = function(time) {
+    var d = Date.parse(time)
+    if(d) {
+        var dateArray = d.toString('dd.MM.yyyy HH:mm').split(' ')[0].split('.')
+        var timeArray = d.toString('dd.MM.yyyy HH:mm').split(' ')[1].split(':')
+        return dateArray[2] + '-' + dateArray[1] + '-' + dateArray[0] + ' ' + timeArray[0] + ':' + timeArray[1]
+    } else {
+        return ''
+    }
+}
+
+
+
 angular.module('lumeparkApp', ['ngRoute'])
 
 
@@ -330,6 +343,8 @@ angular.module('lumeparkApp', ['ngRoute'])
             if($scope.sData.oldLending[property] && $scope.sData.lending[property].db_value === $scope.sData.oldLending[property]) { return }
 
             var lendingId = $scope.sData.lending._id
+
+            if(property === 'algus') { $scope.sData.lending[property].db_value = parseDate($scope.sData.lending[property].db_value) }
 
             async.series([
                 function getUser(callback) {
