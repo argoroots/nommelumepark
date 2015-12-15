@@ -43,19 +43,18 @@ angular.module('lumeparkApp', ['ngRoute'])
     .directive('isLoading', ['$http', function($http) {
         return {
             restrict: 'A',
-            link: function(scope, elm, attrs) {
+            link: function(scope, elm) {
+                cl(attrs)
                 scope.isLoading = function() {
                     return $http.pendingRequests.length > 0
                 }
                 scope.$watch(scope.isLoading, function(v) {
                     if(v) {
                         if(elm[0].nodeName === 'IMG') { elm.show() }
-                        if(elm[0].nodeName === 'INPUT') { elm.attr('readonly', 'readonly') }
-                        if(elm[0].nodeName === 'SELECT') { elm.attr('readonly', 'readonly') }
+                        if(elm[0].nodeName === 'INPUT' || elm[0].nodeName === 'SELECT') { elm.attr('readonly', 'readonly') }
                     } else {
                         if(elm[0].nodeName === 'IMG') { elm.hide() }
-                        if(elm[0].nodeName === 'INPUT') { elm.attr('readonly', null) }
-                        if(elm[0].nodeName === 'SELECT') { elm.attr('readonly', null) }
+                        if(elm[0].nodeName === 'INPUT' || elm[0].nodeName === 'SELECT') { elm.attr('readonly', null) }
                     }
                 })
             }

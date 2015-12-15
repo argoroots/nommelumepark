@@ -1,14 +1,8 @@
 var entuAPI = 'https://nommelumepark.entu.ee/api2/'
 var erplyAPI = 'https://nommelumepark.entu.ee/erply/'
-
-var cl = function(data) {
-    console.log(data)
-}
-
-
-
-// ENTU HELPERS
 var entu = {}
+
+
 
 entu.getAuthUrl = function(state, redirect_url, http, callback) {
     http.post(entuAPI + 'user/auth', {state: state, redirect_url: redirect_url})
