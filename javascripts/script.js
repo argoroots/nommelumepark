@@ -40,7 +40,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 // SPINNER
-    .directive('spinner', ['$http', function($http) {
+    .directive('isLoading', ['$http', function($http) {
         return {
             restrict: 'A',
             link: function(scope, elm, attrs) {
@@ -49,9 +49,13 @@ angular.module('lumeparkApp', ['ngRoute'])
                 }
                 scope.$watch(scope.isLoading, function(v) {
                     if(v) {
-                        elm.show()
+                        if(elm[0].nodeName === 'IMG') { elm.show() }
+                        if(elm[0].nodeName === 'INPUT') { elm.attr('readonly', 'readonly') }
+                        if(elm[0].nodeName === 'SELECT') { elm.attr('readonly', 'readonly') }
                     } else {
-                        elm.hide()
+                        if(elm[0].nodeName === 'IMG') { elm.hide() }
+                        if(elm[0].nodeName === 'INPUT') { elm.attr('readonly', null) }
+                        if(elm[0].nodeName === 'SELECT') { elm.attr('readonly', null) }
                     }
                 })
             }

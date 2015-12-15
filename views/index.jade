@@ -22,7 +22,7 @@ html(ng-app='lumeparkApp')
 
                 ul.nav.navbar-nav.navbar-left
                     li.navbar-text
-                        img(spinner, src='/images/loader.gif')
+                        img(is-loading, src='/images/loader.gif')
 
                 ul.nav.navbar-nav.navbar-right(ng-if='rData.user')
                     li(ng-class='{ active: rData.activeMenu === "new" }')
