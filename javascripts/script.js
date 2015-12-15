@@ -1,5 +1,3 @@
-var entuAPI3 = 'https://auth.entu.ee/'
-
 var cl = function(data) {
     console.log(data)
 }
@@ -127,11 +125,10 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 // LOGOUT
     .controller('logoutCtrl', ['$rootScope', '$location', '$window', function($rootScope, $location, $window) {
-        if(!$rootScope.rData) { $rootScope.rData = {} }
+        $rootScope.rData = {}
 
         $window.sessionStorage.clear()
-        $rootScope.rData.user = null
-        $window.location.href = entuAPI3 + 'exit?next=' + $location.protocol() + '://' + location.host
+        $window.location.href = 'https://auth.entu.ee/exit?next=' + $location.protocol() + '://' + location.host
     }])
 
 

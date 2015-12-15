@@ -1,5 +1,4 @@
 var entuAPI = 'https://nommelumepark.entu.ee/api2/'
-var entuAPI3 = 'https://auth.entu.ee/'
 var erplyAPI = 'https://nommelumepark.entu.ee/erply/'
 
 var cl = function(data) {
