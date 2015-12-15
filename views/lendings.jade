@@ -12,7 +12,7 @@ script(type='text/ng-template', id='lendings')
 
         .row.spacer
 
-        .row(ng-if='lendings')
+        .row(ng-if='sData.lendings')
             .col-xs-12
                 table.table
                     thead
@@ -23,7 +23,7 @@ script(type='text/ng-template', id='lendings')
                             th Lisainfo
                             th Arve #
                     tbody
-                        tr(ng-repeat='lending in lendings | filter : search | orderBy : "status"')
+                        tr(ng-repeat='lending in sData.lendings | filter : search | orderBy : "status"')
                             th
                                 a(ng-href='/#/lending/{{ lending._id }}') {{ lending.laenutaja.value }}
                             th .
