@@ -11,6 +11,22 @@ var cl = function(data) {
 // ENTU HELPERS
 var entu = {}
 
+entu.getAuthUrl = function(state, redirect_url, http, callback) {
+    http.post(entuAPI + 'user/auth', {state: state, redirect_url: redirect_url})
+        .success(function(data) {
+            if(data.result) {
+                callback(null, data.result)
+            } else {
+                callback(data)
+            }
+        })
+        .error(function(error) {
+            callback(error)
+        })
+}
+
+
+
 entu.getUser = function(userId, userToken, http, callback) {
     http.get(entuAPI + 'user', {
             headers: {
@@ -36,6 +52,8 @@ entu.getUser = function(userId, userToken, http, callback) {
         })
 }
 
+
+
 entu.getEntities = function(params, userId, userToken, http, callback) {
     http.get(entuAPI + 'entity', {
             headers: {
@@ -55,6 +73,8 @@ entu.getEntities = function(params, userId, userToken, http, callback) {
             callback(error)
         })
 }
+
+
 
 entu.getEntity = function(entityId, userId, userToken, http, callback) {
     http.get(entuAPI + 'entity-' + entityId, {
@@ -86,6 +106,8 @@ entu.getEntity = function(entityId, userId, userToken, http, callback) {
         })
 }
 
+
+
 entu.getChilds = function(entityId, userId, userToken, http, callback) {
     http.get(entuAPI + 'entity-' + entityId +'/childs', {
             headers: {
@@ -113,6 +135,8 @@ entu.getChilds = function(entityId, userId, userToken, http, callback) {
         })
 }
 
+
+
 entu.getErply = function(method, params, userId, userToken, http, callback) {
     http.post(erplyAPI + method, params, {
             headers: {
@@ -131,6 +155,8 @@ entu.getErply = function(method, params, userId, userToken, http, callback) {
             callback(error)
         })
 }
+
+
 
 entu.addEntity = function(parentEntityId, properties, userId, userToken, http, callback) {
     http.post(entuAPI + 'entity-' + parentEntityId +'/childs', properties, {

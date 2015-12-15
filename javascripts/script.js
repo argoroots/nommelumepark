@@ -1,4 +1,3 @@
-var entuAPI = 'https://nommelumepark.entu.ee/api2/'
 var entuAPI3 = 'https://auth.entu.ee/'
 
 var cl = function(data) {
@@ -77,7 +76,6 @@ angular.module('lumeparkApp', ['ngRoute'])
         if(!$rootScope.rData) { $rootScope.rData = {} }
 
         $rootScope.rData.activeMenu = null
-        $rootScope.rData.entuUrl = entuAPI
 
         entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
             if(error) {
@@ -97,14 +95,13 @@ angular.module('lumeparkApp', ['ngRoute'])
         $window.sessionStorage.clear()
         $window.sessionStorage.setItem('state', state)
 
-        $http.post(entuAPI + 'user/auth', {state: state, redirect_url: $location.protocol() + '://' + location.host + '/#/auth'})
-            .success(function(data) {
-                $window.sessionStorage.setItem('authUrl', data.result.auth_url)
-                $window.location.href = data.result.auth_url
-            })
-            .error(function(error) {
-                cl(error)
-            })
+        entu.getAuthUrl(state, $location.protocol() + '://' + location.host + '/#/auth', $http, function(error, data) {
+            if(error) { return cl(error) }
+            if(!data.auth_url) { return cl(data) }
+
+            $window.sessionStorage.setItem('authUrl', data.auth_url)
+            $window.location.href = data.auth_url
+        })
     }])
 
 
@@ -144,6 +141,7 @@ angular.module('lumeparkApp', ['ngRoute'])
         if(!$rootScope.rData) { $rootScope.rData = {} }
 
         $rootScope.rData.activeMenu = $routeParams.filter
+
         $scope.sData = {
             lendings: []
         }
