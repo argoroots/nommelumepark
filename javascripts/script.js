@@ -44,7 +44,6 @@ angular.module('lumeparkApp', ['ngRoute'])
         return {
             restrict: 'A',
             link: function(scope, elm) {
-                cl(attrs)
                 scope.isLoading = function() {
                     return $http.pendingRequests.length > 0
                 }
