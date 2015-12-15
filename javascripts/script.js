@@ -72,6 +72,23 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 
+// SET PATH WITHOUT RELOADING
+    .run(['$route', '$rootScope', '$location', function ($route, $rootScope, $location) {
+        var original = $location.path
+        $location.path = function (path, reload) {
+            if (reload === false) {
+                var lastRoute = $route.current
+                var un = $rootScope.$on('$locationChangeSuccess', function () {
+                    $route.current = lastRoute
+                    un()
+                })
+            }
+            return original.apply($location, [path])
+        }
+    }])
+
+
+
 // START
     .controller('startCtrl', ['$rootScope', '$http', '$window', function($rootScope, $http, $window) {
         if(!$rootScope.rData) { $rootScope.rData = {} }
@@ -187,7 +204,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 //LENDING
-    .controller('lendingCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window) {
+    .controller('lendingCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$location', '$window', function($scope, $rootScope, $http, $routeParams, $location, $window) {
         if(!$rootScope.rData) { $rootScope.rData = {} }
 
         $scope.sData = {
@@ -327,18 +344,15 @@ angular.module('lumeparkApp', ['ngRoute'])
 
                     entu.addEntity(614, lendingData, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, newEntity) {
                         lendingId = newEntity.id
-                        $routeParams.id = lendingId
+                        $location.path('/lending/' + lendingId, false)
                         callback()
                     })
                 },
                 function changeLendingEntity(callback) {
                     var lendingData = {}
-                    cl($scope.sData.lending)
                     if($scope.sData.lending[property].id) {
-                        cl('a')
                         lendingData['laenutus-' + property + '.' + $scope.sData.lending[property].id] = $scope.sData.lending[property].db_value
                     } else {
-                        cl('b')
                         lendingData['laenutus-' + property] = $scope.sData.lending[property].db_value
                     }
                     entu.changeEntity(lendingId, lendingData, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
