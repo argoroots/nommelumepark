@@ -326,6 +326,8 @@ angular.module('lumeparkApp', ['ngRoute'])
         $scope.addLendingRow = function(item) {
             $('#select-item-modal').modal('hide')
 
+            if(!$scope.sData.lending._id) { return }
+
             async.waterfall([
                 function getUser(callback) {
                     entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
@@ -338,22 +340,23 @@ angular.module('lumeparkApp', ['ngRoute'])
                         }
                     })
                 },
-                // function addLendingRow(callback) {
-                //     entu.addEntity(614, { definition: 'laenutus', 'laenutuse-rida-varustus': item._id }, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
-                // },
-                // function getEachItem(lendings, callback) {
-                //     $scope.sData.foundItems = []
-                //     async.each(lendings, function(lending) {
-                //         entu.getEntity(lending.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
-                //             if(error) {
-                //                 callback(error)
-                //             } else {
-                //                 $scope.sData.foundItems.push(entity)
-                //                 callback()
-                //             }
-                //         })
-                //     }, callback)
-                // }
+                function addLendingRowEntity(callback) {
+                    var lendingRow = {
+                        definition: 'laenutuse-rida',
+                        'laenutuse-rida-varustus': item._id
+                    }
+                    entu.addEntity($scope.sData.lending._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
+                },
+                function getNewLendingRow(lendingRow, callback) {
+                    entu.getEntity(lendingRow.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
+                        if(error) {
+                            callback(error)
+                        } else {
+                            $scope.sData.lendingRows.push(entity)
+                            callback()
+                        }
+                    })
+                }
             ], function(error) {
                 if(error) {
                     cl(error)
@@ -361,7 +364,7 @@ angular.module('lumeparkApp', ['ngRoute'])
             })
         }
 
-        $scope.sumErplyRows = function() {
+        $scope.sumInvoiceRows = function() {
             var sum = 0
             for(var i in $scope.sData.invoiceRows) {
                 if(!$scope.sData.invoiceRows.hasOwnProperty(i)) { continue }

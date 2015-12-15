@@ -158,7 +158,7 @@ entu.getErply = function(method, params, userId, userToken, http, callback) {
 
 
 entu.addEntity = function(parentEntityId, properties, userId, userToken, http, callback) {
-    http.post(entuAPI + 'entity-' + parentEntityId +'/childs', properties, {
+    http.post(entuAPI + 'entity-' + parentEntityId, properties, {
             headers: {
                 'X-Auth-UserId': userId,
                 'X-Auth-Token': userToken

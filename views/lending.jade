@@ -40,7 +40,7 @@ script(type='text/ng-template', id='lending')
                                     th Lõpp
                                     th &nbsp;
                             tbody
-                                tr(ng-repeat='row in lendingRows | filter : search | orderBy : "status"')
+                                tr(ng-repeat='row in sData.lendingRows | filter : search | orderBy : "status"')
                                     td {{ row.varustus.value }}
                                     td {{ row.info }}
                                     td 1h
@@ -74,7 +74,7 @@ script(type='text/ng-template', id='lending')
                                         option(value='') -- lisa arve rida --
                             tr.warning
                                 th KOKKU
-                                th.text-right(colspan=2) {{ sumErplyRows().toFixed(1).replace('.0', '.-') }}
+                                th.text-right(colspan=2) {{ sumInvoiceRows().toFixed(1).replace('.0', '.-') }}
                                 th(ng-if='!sData.lending.erply.value') &nbsp;
 
         .row.spacer
@@ -85,7 +85,7 @@ script(type='text/ng-template', id='lending')
                 button.btn.btn-lg.btn-warning(ng-if='!sData.lending.erply.value') Väljasta kõik
 
         .row.spacer
-            //- pre.col-xs-12 {{ sData.lending | json }}
+            //- pre.col-xs-12 {{ sData.lendingRows | json }}
 
     #select-item-modal.modal.fade(tabindex='-1', role='dialog')
         .modal-dialog
