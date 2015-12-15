@@ -22,17 +22,17 @@ html(ng-app='lumeparkApp')
                         span.icon-bar
                         span.icon-bar
                         span.icon-bar
-                    a.navbar-brand(ng-if='user', href='/#/') {{ user.name }}
+                    a.navbar-brand(ng-if='rData.user', href='/#/') {{ rData.user.name }}
 
                 #bs-example-navbar-collapse-1.collapse.navbar-collapse
-                    ul.nav.navbar-nav.navbar-right(ng-if='user')
-                        li(ng-class='{ active: activeMenu === "bron" }')
+                    ul.nav.navbar-nav.navbar-right(ng-if='rData.user')
+                        li(ng-class='{ active: rData.activeMenu === "bron" }')
                             a(href='/#/lendings/bron') Broneeringud
-                        li(ng-class='{ active: activeMenu === "out" }')
+                        li(ng-class='{ active: rData.activeMenu === "out" }')
                             a(href='/#/lendings/out') Rendis
                         li
                             a.glyphicon.glyphicon-log-out(href='/#/logout')
-                    ul.nav.navbar-nav.navbar-right(ng-if='!user')
+                    ul.nav.navbar-nav.navbar-right(ng-if='!rData.user')
                         li
                             a.glyphicon.glyphicon-log-in(href='/#/login')
 

@@ -65,7 +65,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 // ANALYTICS
     // .run(['$rootScope', '$location', function($rootScope, $location) {
-    //     $rootScope.$on('$routeChangeSuccess', function() {
+    //     $rootScope.rData.$on('$routeChangeSuccess', function() {
     //         ga('send', 'pageview', {page: $location.path(), title: $location.path().substring(1).replace('/', ' - ')})
     //     })
     // }])
@@ -74,14 +74,16 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 // START
     .controller('startCtrl', ['$rootScope', '$http', '$window', function($rootScope, $http, $window) {
-        $rootScope.activeMenu = null
-        $rootScope.entuUrl = entuAPI
+        if(!$rootScope.rData) { $rootScope.rData = {} }
+
+        $rootScope.rData.activeMenu = null
+        $rootScope.rData.entuUrl = entuAPI
 
         entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
             if(error) {
-                $rootScope.user = null
+                $rootScope.rData.user = null
             } else {
-                $rootScope.user = user
+                $rootScope.rData.user = user
             }
         })
     }])
@@ -128,8 +130,10 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 // LOGOUT
     .controller('logoutCtrl', ['$rootScope', '$location', '$window', function($rootScope, $location, $window) {
+        if(!$rootScope.rData) { $rootScope.rData = {} }
+
         $window.sessionStorage.clear()
-        $rootScope.user = null
+        $rootScope.rData.user = null
         $window.location.href = entuAPI3 + 'exit?next=' + $location.protocol() + '://' + location.host
     }])
 
@@ -137,27 +141,32 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 // LENDINGS
     .controller('lendingsCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window) {
-        $rootScope.activeMenu = $routeParams.filter
+        if(!$rootScope.rData) { $rootScope.rData = {} }
+
+        $rootScope.rData.activeMenu = $routeParams.filter
+        $scope.sData = {
+            lendings: []
+        }
 
         async.waterfall([
             function getUser(callback) {
                 entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
                     if(error) {
-                        $rootScope.user = null
+                        $rootScope.rData.user = null
                         callback(error)
                     } else {
-                        $rootScope.user = user
+                        $rootScope.rData.user = user
                         callback()
                     }
                 })
             },
             function getLendings(callback) {
-                entu.getEntities({ definition: 'laenutus' }, $rootScope.user.id, $rootScope.user.token, $http, callback)
+                entu.getEntities({ definition: 'laenutus' }, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
             },
             function getEachLending(lendings, callback) {
                 $scope.sData.lendings = []
                 async.each(lendings, function(lending) {
-                    entu.getEntity(lending.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
+                    entu.getEntity(lending.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
                         if(error) {
                             callback(error)
                         } else {
@@ -181,6 +190,8 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 //LENDING
     .controller('lendingCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window) {
+        if(!$rootScope.rData) { $rootScope.rData = {} }
+
         $scope.sData = {
             lending: {},
             customers: [],
@@ -194,10 +205,10 @@ angular.module('lumeparkApp', ['ngRoute'])
             function getUser(callback) {
                 entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
                     if(error) {
-                        $rootScope.user = null
+                        $rootScope.rData.user = null
                         callback(error)
                     } else {
-                        $rootScope.user = user
+                        $rootScope.rData.user = user
                         callback()
                     }
                 })
@@ -205,7 +216,7 @@ angular.module('lumeparkApp', ['ngRoute'])
             function getData(callback) {
                 async.parallel([
                     function getLending(callback) {
-                        entu.getEntity($routeParams.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
+                        entu.getEntity($routeParams.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
                             if(error) {
                                 callback(error)
                             } else {
@@ -217,12 +228,12 @@ angular.module('lumeparkApp', ['ngRoute'])
                     function getLendingRows(callback) {
                         async.waterfall([
                             function getChilds(callback) {
-                                entu.getChilds($routeParams.id, $rootScope.user.id, $rootScope.user.token, $http, callback)
+                                entu.getChilds($routeParams.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
                             },
                             function getEntities(lendingChilds, callback) {
                                 $scope.sData.lendingRows = []
                                 async.each(lendingChilds, function(value, callback) {
-                                    entu.getEntity(value.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
+                                    entu.getEntity(value.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
                                         if(error) {
                                             callback(error)
                                         } else {
@@ -235,7 +246,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         ], callback)
                     },
                     function getErplyCustomers(callback) {
-                        entu.getErply('getCustomers', {}, $rootScope.user.id, $rootScope.user.token, $http, function(error, customers) {
+                        entu.getErply('getCustomers', {}, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, customers) {
                             if(error) {
                                 callback(error)
                             } else {
@@ -251,7 +262,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         })
                     },
                     function getErplyPrices(callback) {
-                        entu.getErply('getProducts', { groupID: 3 }, $rootScope.user.id, $rootScope.user.token, $http, function(error, customers) {
+                        entu.getErply('getProducts', { groupID: 3 }, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, customers) {
                             if(error) {
                                 callback(error)
                             } else {
@@ -283,21 +294,21 @@ angular.module('lumeparkApp', ['ngRoute'])
                 function getUser(callback) {
                     entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
                         if(error) {
-                            $rootScope.user = null
+                            $rootScope.rData.user = null
                             callback(error)
                         } else {
-                            $rootScope.user = user
+                            $rootScope.rData.user = user
                             callback()
                         }
                     })
                 },
                 function getItems(callback) {
-                    entu.getEntities({ definition: 'varustus', query: $scope.sData.addLendingRowQuery }, $rootScope.user.id, $rootScope.user.token, $http, callback)
+                    entu.getEntities({ definition: 'varustus', query: $scope.sData.addLendingRowQuery }, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
                 },
                 function getEachItem(lendings, callback) {
                     $scope.sData.foundItems = []
                     async.each(lendings, function(lending) {
-                        entu.getEntity(lending.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
+                        entu.getEntity(lending.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
                             if(error) {
                                 callback(error)
                             } else {
@@ -324,21 +335,21 @@ angular.module('lumeparkApp', ['ngRoute'])
                 function getUser(callback) {
                     entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
                         if(error) {
-                            $rootScope.user = null
+                            $rootScope.rData.user = null
                             callback(error)
                         } else {
-                            $rootScope.user = user
+                            $rootScope.rData.user = user
                             callback()
                         }
                     })
                 },
                 // function addLendingRow(callback) {
-                //     entu.addEntity(614, { definition: 'laenutus', 'laenutuse-rida-varustus': item._id }, $rootScope.user.id, $rootScope.user.token, $http, callback)
+                //     entu.addEntity(614, { definition: 'laenutus', 'laenutuse-rida-varustus': item._id }, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
                 // },
                 // function getEachItem(lendings, callback) {
                 //     $scope.sData.foundItems = []
                 //     async.each(lendings, function(lending) {
-                //         entu.getEntity(lending.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
+                //         entu.getEntity(lending.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
                 //             if(error) {
                 //                 callback(error)
                 //             } else {
