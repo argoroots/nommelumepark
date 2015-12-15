@@ -226,7 +226,8 @@ angular.module('lumeparkApp', ['ngRoute'])
                                 $scope.sData.lending = entity
                                 for (var i in $scope.sData.lending) {
                                     if (!$scope.sData.lending.hasOwnProperty(i)) { continue }
-                                    $scope.sData.oldLending[i] = $scope.sData.lending[i]
+                                    if (!$scope.sData.lending[i].db_value) { continue }
+                                    $scope.sData.oldLending[i] = $scope.sData.lending[i].db_value
                                 }
                                 callback()
                             }
@@ -300,12 +301,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
         $scope.saveLending = function(property) {
             if(!$scope.sData.lending[property]) { return }
-            if(!$scope.sData.lending[property].db_value) { return }
-
-            cl($scope.sData.lending[property].db_value)
-            cl($scope.sData.oldLending[property].db_value)
-
-            if($scope.sData.oldLending[property].db_value && $scope.sData.lending[property].db_value === $scope.sData.oldLending[property].db_value) { return }
+            if($scope.sData.oldLending[property] && $scope.sData.lending[property].db_value === $scope.sData.oldLending[property]) { return }
 
             var lendingId = $scope.sData.lending._id
 
@@ -355,7 +351,8 @@ angular.module('lumeparkApp', ['ngRoute'])
                             $scope.sData.lending = entity
                             for (var i in $scope.sData.lending) {
                                 if (!$scope.sData.lending.hasOwnProperty(i)) { continue }
-                                $scope.sData.oldLending[i] = $scope.sData.lending[i]
+                                if (!$scope.sData.lending[i].db_value) { continue }
+                                $scope.sData.oldLending[i] = $scope.sData.lending[i].db_value
                             }
                             callback()
                         }
