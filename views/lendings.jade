@@ -18,14 +18,14 @@ script(type='text/ng-template', id='lendings')
                         tr
                             th Klient
                             th Algus
-                            th Lõpp
+                            th Kestvus
                             th Lisainfo
                             th Arve #
                     tbody
                         tr(ng-repeat='lending in sData.lendings | filter : search | orderBy : "status"')
                             th
                                 a(ng-href='/#/lending/{{ lending._id }}') {{ lending.laenutaja.value || '...' }}
-                            th .
-                            th .
+                            td {{ lending.algus.value }}
+                            td {{ lending.kestvus.value }}
                             td {{ lending.kirjeldus.value }}
                             td {{ lending.erply.value }}
