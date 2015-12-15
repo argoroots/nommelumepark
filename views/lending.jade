@@ -8,16 +8,16 @@ script(type='text/ng-template', id='lending')
                 form.row
                     .form-group.col-xs-12.col-sm-6
                         label(for='laenutaja') Klient
-                        select#laenutaja.form-control(ng-disabled='!sData.customers', ng-options='c.name as c.name group by c.name.substring(0, 1).toUpperCase() for c in sData.customers | orderBy : "name"', ng-model='lending.laenutaja.value')
+                        select#laenutaja.form-control(ng-disabled='sData.customers.length < 1', ng-options='c.name as c.name group by c.name.substring(0, 1).toUpperCase() for c in sData.customers | orderBy : "name"', ng-model='sData.lending.laenutaja.value')
                             option(value='') -- vali klient --
 
                     .form-group.col-xs-12
                         label(for='kirjeldus') Lisainfo
-                        input#kirjeldus.form-control(type='text', ng-model='lending.kirjeldus.value')
+                        input#kirjeldus.form-control(type='text', ng-model='sData.lending.kirjeldus.value')
 
                     .form-group.col-xs-12.col-sm-6
                         label(for='kirjeldus') Broneeringu algus
-                        input#kirjeldus.form-control(type='text', ng-model='lending.kirjeldus.value', placeholder='nt. 31.12.2015 14:00')
+                        input#kirjeldus.form-control(type='text', ng-model='sData.lending.kirjeldus.value', placeholder='nt. 31.12.2015 14:00')
 
                     .form-group.col-xs-12.col-sm-6
                         label(for='laenutaja') Broneeringu kestvus
@@ -59,32 +59,33 @@ script(type='text/ng-template', id='lending')
                             tr
                                 th.warning ARVE
                                 th.warning.text-right(colspan=3)
-                                    span(ng-if='lending.erply.value') \#{{ lending.erply.value }}
+                                    span(ng-if='sData.lending.erply.value') \#{{ sData.lending.erply.value }}
                         tbody
-                            tr.warning(ng-repeat='row in lending.prices | orderBy : "name" track by $index')
+                            tr.warning(ng-repeat='row in sData.invoiceRows | orderBy : "name" track by $index')
                                 td {{ row.name }}
                                 td.text-right
                                     span(ng-if='row.quantity > 1') {{ row.quantity }}&nbsp;x
                                 td.text-right {{ row.price.toFixed(1).replace('.0', '.-') }}
-                                td(ng-if='!lending.erply.value')
-                                    button.btn.btn-xs.btn-danger.pull-right(ng-click='deleteLendingPrice(row.id)') Kustuta
-                            tr.warning(ng-if='!lending.erply.value')
+                                td(ng-if='!sData.lending.erply.value')
+                                    button.btn.btn-xs.btn-danger.pull-right(ng-click='deleteInvoiceRow(row.id)') Kustuta
+                            tr.warning(ng-if='!sData.lending.erply.value')
                                 td(colspan=4)
-                                    select.form-control(ng-disabled='!sData.prices', ng-options='p.name for p in sData.prices | orderBy : "name"', ng-model='newLendingPrice', ng-change='addLendingPrice(newLendingPrice); newLendingPrice = null')
+                                    select.form-control(ng-disabled='sData.prices.length < 1', ng-options='p.name for p in sData.prices | orderBy : "name"', ng-model='sData.newInvoiceRow', ng-change='addInvoiceRow(sData.newInvoiceRow); sData.newInvoiceRow = null')
                                         option(value='') -- lisa arve rida --
                             tr.warning
                                 th KOKKU
                                 th.text-right(colspan=2) {{ sumErplyRows().toFixed(1).replace('.0', '.-') }}
-                                th(ng-if='!lending.erply.value') &nbsp;
+                                th(ng-if='!sData.lending.erply.value') &nbsp;
 
         .row.spacer
 
         .row(ng-if='lendingRows')
             .col-xs-12.text-center
-                button.btn.btn-lg.btn-info(ng-if='lending.erply.value') Tagasta kõik
-                button.btn.btn-lg.btn-warning(ng-if='!lending.erply.value') Väljasta kõik
+                button.btn.btn-lg.btn-info(ng-if='sData.lending.erply.value') Tagasta kõik
+                button.btn.btn-lg.btn-warning(ng-if='!sData.lending.erply.value') Väljasta kõik
 
         .row.spacer
+            pre.col-xs-12 {{ sData | json }}
 
     #select-item-modal.modal.fade(tabindex='-1', role='dialog')
         .modal-dialog

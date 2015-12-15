@@ -155,7 +155,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                 entu.getEntities({ definition: 'laenutus' }, $rootScope.user.id, $rootScope.user.token, $http, callback)
             },
             function getEachLending(lendings, callback) {
-                $scope.lendings = []
+                $scope.sData.lendings = []
                 async.each(lendings, function(lending) {
                     entu.getEntity(lending.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
                         if(error) {
@@ -163,7 +163,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         } else {
                             entity.status = entity.staatus ? entity.staatus.value : 'archive'
                             if(!$routeParams.filter || $routeParams.filter === entity.status) {
-                                $scope.lendings.push(entity)
+                                $scope.sData.lendings.push(entity)
                             }
                             callback()
                         }
@@ -182,8 +182,11 @@ angular.module('lumeparkApp', ['ngRoute'])
 //LENDING
     .controller('lendingCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window) {
         $scope.sData = {
+            lending: {},
             customers: [],
             prices: [],
+            lendingRows: [],
+            invoiceRows: [],
             addLendingRowQuery: ''
         }
 
@@ -206,7 +209,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                             if(error) {
                                 callback(error)
                             } else {
-                                $scope.lending = entity
+                                $scope.sData.lending = entity
                                 callback()
                             }
                         })
@@ -217,13 +220,13 @@ angular.module('lumeparkApp', ['ngRoute'])
                                 entu.getChilds($routeParams.id, $rootScope.user.id, $rootScope.user.token, $http, callback)
                             },
                             function getEntities(lendingChilds, callback) {
-                                $scope.lendingRows = []
+                                $scope.sData.lendingRows = []
                                 async.each(lendingChilds, function(value, callback) {
                                     entu.getEntity(value.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
                                         if(error) {
                                             callback(error)
                                         } else {
-                                            $scope.lendingRows.push(entity)
+                                            $scope.sData.lendingRows.push(entity)
                                             callback()
                                         }
                                     })
@@ -292,13 +295,13 @@ angular.module('lumeparkApp', ['ngRoute'])
                     entu.getEntities({ definition: 'varustus', query: $scope.sData.addLendingRowQuery }, $rootScope.user.id, $rootScope.user.token, $http, callback)
                 },
                 function getEachItem(lendings, callback) {
-                    $scope.foundItems = []
+                    $scope.sData.foundItems = []
                     async.each(lendings, function(lending) {
                         entu.getEntity(lending.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
                             if(error) {
                                 callback(error)
                             } else {
-                                $scope.foundItems.push(entity)
+                                $scope.sData.foundItems.push(entity)
                                 callback()
                             }
                         })
@@ -333,13 +336,13 @@ angular.module('lumeparkApp', ['ngRoute'])
                 //     entu.addEntity(614, { definition: 'laenutus', 'laenutuse-rida-varustus': item._id }, $rootScope.user.id, $rootScope.user.token, $http, callback)
                 // },
                 // function getEachItem(lendings, callback) {
-                //     $scope.foundItems = []
+                //     $scope.sData.foundItems = []
                 //     async.each(lendings, function(lending) {
                 //         entu.getEntity(lending.id, $rootScope.user.id, $rootScope.user.token, $http, function(error, entity) {
                 //             if(error) {
                 //                 callback(error)
                 //             } else {
-                //                 $scope.foundItems.push(entity)
+                //                 $scope.sData.foundItems.push(entity)
                 //                 callback()
                 //             }
                 //         })
@@ -354,44 +357,44 @@ angular.module('lumeparkApp', ['ngRoute'])
 
         $scope.sumErplyRows = function() {
             var sum = 0
-            for(var i in $scope.lending.prices) {
-                if(!$scope.lending.prices.hasOwnProperty(i)) { continue }
-                sum = sum + $scope.lending.prices[i].price * $scope.lending.prices[i].quantity
+            for(var i in $scope.sData.invoiceRows) {
+                if(!$scope.sData.invoiceRows.hasOwnProperty(i)) { continue }
+                sum = sum + $scope.sData.invoiceRows[i].price * $scope.sData.invoiceRows[i].quantity
             }
             return sum
         }
 
-        $scope.addLendingPrice = function(value) {
+        $scope.addInvoiceRow = function(value) {
             if(!value) { return }
 
-            $scope.newLendingPrice = {
+            $scope.sData.newInvoiceRow = {
                 id: 0,
                 name: '-- Lisa uus --'
             }
-            if(!$scope.lending.prices) {
-                $scope.lending.prices = []
+            if(!$scope.sData.invoiceRows) {
+                $scope.sData.invoiceRows = []
             }
 
-            for(var i in $scope.lending.prices) {
-                if(!$scope.lending.prices.hasOwnProperty(i)) { continue }
-                if($scope.lending.prices[i].id === value.id) {
-                    $scope.lending.prices[i].quantity = $scope.lending.prices[i].quantity + 1
+            for(var i in $scope.sData.invoiceRows) {
+                if(!$scope.sData.invoiceRows.hasOwnProperty(i)) { continue }
+                if($scope.sData.invoiceRows[i].id === value.id) {
+                    $scope.sData.invoiceRows[i].quantity = $scope.sData.invoiceRows[i].quantity + 1
                     return
                 }
             }
-            $scope.lending.prices.push(value)
+            $scope.sData.invoiceRows.push(value)
         }
 
-        $scope.deleteLendingPrice = function(value) {
+        $scope.deleteInvoiceRow = function(value) {
             if(!value) { return }
 
-            for(var i in $scope.lending.prices) {
-                if(!$scope.lending.prices.hasOwnProperty(i)) { continue }
-                if($scope.lending.prices[i].id === parseInt(value, 10)) {
-                    if($scope.lending.prices[i].quantity > 1) {
-                        $scope.lending.prices[i].quantity = $scope.lending.prices[i].quantity - 1
+            for(var i in $scope.sData.invoiceRows) {
+                if(!$scope.sData.invoiceRows.hasOwnProperty(i)) { continue }
+                if($scope.sData.invoiceRows[i].id === parseInt(value, 10)) {
+                    if($scope.sData.invoiceRows[i].quantity > 1) {
+                        $scope.sData.invoiceRows[i].quantity = $scope.sData.invoiceRows[i].quantity - 1
                     } else {
-                        $scope.lending.prices.splice(i, 1)
+                        $scope.sData.invoiceRows.splice(i, 1)
                     }
                     break
                 }
