@@ -7,9 +7,7 @@ var cl = function(data) {
 var parseDate = function(time) {
     var d = Date.parse(time)
     if(d) {
-        var dateArray = d.toString('dd.MM.yyyy HH:mm').split(' ')[0].split('.')
-        var timeArray = d.toString('dd.MM.yyyy HH:mm').split(' ')[1].split(':')
-        return dateArray[2] + '-' + dateArray[1] + '-' + dateArray[0] + ' ' + timeArray[0] + ':' + timeArray[1]
+        return d.toString('yyyy-MM-dd HH:mm')
     } else {
         return ''
     }
@@ -268,6 +266,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                                     if (!$scope.sData.lending[i].db_value) { continue }
                                     $scope.sData.oldLending[i] = $scope.sData.lending[i].db_value
                                 }
+                                $scope.calculateDates()
                                 callback()
                             }
                         })
@@ -336,6 +335,18 @@ angular.module('lumeparkApp', ['ngRoute'])
             }
         })
 
+        $scope.calculateDates = function(argument) {
+            if($scope.sData.lending.algus) {
+                $scope.sData.lending.algus.db_value = $scope.sData.lending.algus.db_value.substring(0, 16)
+                $scope.sData.lending.algus.value = $scope.sData.lending.algus.value.substring(0, 16)
+                $scope.sData.lendingEnd = {
+                    h1: Date.parse($scope.sData.lending.algus.db_value).add({ hours: 1 }).toString('HH:mm'),
+                    h3: Date.parse($scope.sData.lending.algus.db_value).add({ hours: 3 }).toString('HH:mm')
+                }
+            } else {
+                $scope.sData.lendingEnd = {}
+            }
+        }
 
 
         $scope.saveLending = function(property) {
@@ -403,6 +414,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                 if(error) {
                     cl(error)
                 }
+                if(property === 'algus') { $scope.calculateDates() }
             })
         }
 

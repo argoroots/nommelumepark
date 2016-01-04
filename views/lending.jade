@@ -23,8 +23,10 @@ script(type='text/ng-template', id='lending')
                         label(for='kestvus') Broneeringu kestvus
                         select#kestvus.form-control(is-loading, ng-model='sData.lending.kestvus.db_value', ng-change='saveLending("kestvus")')
                             option(value='') -- vali kestvus --
-                            option(value='1h') 1h
-                            option(value='3h') 3h
+                            option(ng-if='sData.lendingEnd.h1', value='1h') 1h - tagastus {{ sData.lendingEnd.h1 }}
+                            option(ng-if='!sData.lendingEnd.h1', value='1h') 1h
+                            option(ng-if='sData.lendingEnd.h3', value='3h') 3h - tagastus {{ sData.lendingEnd.h3 }}
+                            option(ng-if='!sData.lendingEnd.h3', value='3h') 3h
                             option(value='24h') päev
 
                 .row.spacer
