@@ -232,6 +232,8 @@ angular.module('lumeparkApp', ['ngRoute'])
             prices: [],
             lendingRows: [],
             invoiceRows: [],
+            paymentTypes: [],
+            paymentType: 'CASH',
             addLendingRowQuery: ''
         }
 
@@ -343,6 +345,22 @@ angular.module('lumeparkApp', ['ngRoute'])
                                     })
                                     callback()
                                 }, callback)
+                            }
+                        })
+                    },
+                    function getErplyPaymentTypes(callback) {
+                        entu.getErply('getInvoicePaymentTypes', { groupID: 3 }, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, types) {
+                            if(error) {
+                                callback(error)
+                            } else {
+                                $scope.sData.paymentTypes = []
+                                for (var i in types) {
+                                    if (!types.hasOwnProperty(i)) { continue }
+                                    $scope.sData.paymentTypes.push({
+                                        id: types[i].type,
+                                        name: types[i].name
+                                    })
+                                }
                             }
                         })
                     },
@@ -623,7 +641,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                     var params = {
                         type: 'CASHINVOICE',
                         pointOfSaleID: 2,
-                        confirmInvoice: 0,
+                        paymentType: $scope.sData.paymentType
                     }
                     for (var i in $scope.sData.customers) {
                         if(!$scope.sData.customers.hasOwnProperty(i)) { continue }

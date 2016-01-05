@@ -6,10 +6,14 @@ script(type='text/ng-template', id='lending')
         .row
             .col-xs-12.col-sm-8
                 form.row
-                    .form-group.col-xs-12.col-sm-6
+                    .form-group.col-xs-12.col-sm-8
                         label(for='laenutaja') Klient
                         select#laenutaja.form-control(is-loading, ng-disabled='sData.customers.length < 1', ng-options='c.name as c.name group by c.name.substring(0, 1).toUpperCase() for c in sData.customers | orderBy : "name"', ng-model='sData.lending.laenutaja.db_value', ng-change='saveLending("laenutaja")')
                             option(value='') -- vali klient --
+
+                    .form-group.col-xs-12.col-sm-4
+                        label(for='payment-type') Makseviis
+                        select#payment-type.form-control(ng-disabled='sData.paymentTypes.length < 1', ng-options='t.id as t.name for t in sData.paymentTypes | orderBy : "name"', ng-model='sData.paymentType')
 
                     .form-group.col-xs-12
                         label(for='kirjeldus') Lisainfo
@@ -85,7 +89,7 @@ script(type='text/ng-template', id='lending')
                 button.btn.btn-lg.btn-info(ng-if='sData.lending.erply', ng-click='lendAllAddInvoice()') Tagasta kõik
 
         .row.spacer
-            //- pre.col-xs-12 {{ sData | json }}
+            //- pre.col-xs-12 {{ sData.paymentType | json }}
 
     #select-item-modal.modal.fade(tabindex='-1', role='dialog')
         .modal-dialog
