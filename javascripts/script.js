@@ -362,7 +362,7 @@ angular.module('lumeparkApp', ['ngRoute'])
             if(error) { cl(error) }
         })
 
-        $scope.calculateDates = function(argument) {
+        $scope.calculateDates = function() {
             if($scope.sData.lending.algus) {
                 $scope.sData.lending.algus.db_value = $scope.sData.lending.algus.db_value.substring(0, 16)
                 $scope.sData.lending.algus.value = $scope.sData.lending.algus.value.substring(0, 16)
@@ -374,6 +374,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                 $scope.sData.lendingEnd = {}
             }
         }
+
 
 
         $scope.saveLending = function(property) {
@@ -601,9 +602,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                             continue
                         }
 
-                        entu.changeEntity(item._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error) {
-                            if(error) { cl(error) }
-                        })
+                        entu.changeEntity(item._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http)
                     }
                     callback(null)
                 },
@@ -623,10 +622,10 @@ angular.module('lumeparkApp', ['ngRoute'])
                         }
                     }
                     var n = 1
-                    for (var i in $scope.sData.invoiceRows) {
-                        if(!$scope.sData.invoiceRows.hasOwnProperty(i)) { continue }
-                        params['productID' + n] = $scope.sData.invoiceRows[i].id
-                        params['amount' + n] = $scope.sData.invoiceRows[i].quantity
+                    for (var ir in $scope.sData.invoiceRows) {
+                        if(!$scope.sData.invoiceRows.hasOwnProperty(ir)) { continue }
+                        params['productID' + n] = $scope.sData.invoiceRows[ir].id
+                        params['amount' + n] = $scope.sData.invoiceRows[ir].quantity
                         n = n + 1
                     }
                     entu.getErply('saveSalesDocument', params, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
