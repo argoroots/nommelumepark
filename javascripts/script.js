@@ -560,6 +560,95 @@ angular.module('lumeparkApp', ['ngRoute'])
             })
         }
 
+
+
+        $scope.lendAllAddInvoice = function() {
+            async.waterfall([
+                function getUser(callback) {
+                    entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
+                        if(error) {
+                            $rootScope.rData.user = null
+                            callback(error)
+                        } else {
+                            $rootScope.rData.user = user
+                            callback()
+                        }
+                    })
+                },
+                function editLendingRowEntities(callback) {
+                    for (var r in $scope.sData.lendingRows) {
+                        if (!$scope.sData.lendingRows.hasOwnProperty(r)) { continue }
+
+                        var item = $scope.sData.lendingRows[r]
+
+                        var lendingRow = {}
+                        if($scope.sData.lending.staatus.value === 'bron' && !item.algus && !item.l6pp) {
+                            lendingRow['laenutuse-rida-algus'] = parseDate('now')
+                        } else if($scope.sData.lending.staatus.value === 'out' && item.algus && !item.l6pp){
+                            lendingRow['laenutuse-rida-l6pp'] = parseDate('now')
+                        } else {
+                            continue
+                        }
+
+                        entu.changeEntity(item._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error) {
+                            if(error) {
+                                cl(error)
+                            }
+                        })
+                    }
+                    callback()
+                },
+                function createNewErplyInvoice(callback) {
+                    if($scope.sData.lending.erply) { return callback() }
+
+                    var params = {
+                        type: 'CASHINVOICE',
+                        pointOfSaleID: 2,
+                        confirmInvoice: 0,
+                    }
+                    for (var i in $scope.sData.customers) {
+                        if (!$scope.sData.customers.hasOwnProperty(i)) { continue }
+                        if($scope.sData.lending.laenutaja.value === $scope.sData.customers[i].name) {
+                            params.customerID = $scope.sData.customers[i].id
+                            break
+                        }
+                    }
+                    var n = 1
+                    for (var i in $scope.sData.invoiceRows) {
+                        if (!$scope.sData.invoiceRows.hasOwnProperty(i)) { continue }
+                        params['productID' + n] = $scope.sData.invoiceRows[i].id
+                        params['amount' + n] = $scope.sData.invoiceRows[i].quantity
+                        n = n + 1
+                    }
+                    entu.getErply('saveSalesDocument', params, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
+                },
+                function changeLendingEntity(invoice, callback) {
+                    var lendingData = {}
+                    if(!$scope.sData.lending.erply) {
+                        if(!invoice[0]) { callback(invoice) }
+                        if(!invoice[0].invoiceID) { callback(invoice) }
+                        lendingData['laenutus-erply'] = invoice[0].invoiceID
+                    }
+                    if(!$scope.sData.lending.staatus) {
+                        lendingData['laenutus-staatus'] = 'out'
+                    } else if($scope.sData.lending.staatus.value === 'bron') {
+                        lendingData['laenutus-staatus.' + $scope.sData.lending.staatus.id] = 'out'
+                    } else if($scope.sData.lending.staatus.value === 'out') {
+                        lendingData['laenutus-staatus.' + $scope.sData.lending.staatus.id] = 'archive'
+                    }
+                    entu.changeEntity($scope.sData.lending._id, lendingData, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
+                },
+            ], function(error) {
+                if(error) {
+                    cl(error)
+                } else {
+                    location.reload()
+                }
+            })
+        }
+
+
+
         $scope.addInvoiceRow = function(value) {
             if(!value) { return }
 

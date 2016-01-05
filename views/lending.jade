@@ -39,18 +39,18 @@ script(type='text/ng-template', id='lending')
                                     th Varustus
                                     th Algus
                                     th Lõpp
-                                    th &nbsp;
+                                    th(ng-if='sData.lending.staatus.value !== "archive"') &nbsp;
                             tbody
                                 tr(ng-repeat='row in sData.lendingRows | filter : search | orderBy : "varustus.value"')
                                     td {{ row.varustus.value }}
                                     td {{ row.algus.value }}
                                     td {{ row.l6pp.value }}
-                                    td.text-right
+                                    td.text-right(ng-if='sData.lending.staatus.value !== "archive"')
                                         button.btn.btn-xs.btn-warning(ng-if='!row.algus || (row.algus && row.l6pp)', ng-click='lendLendingRow(row)') Väljasta
                                         button.btn.btn-xs.btn-info.pull-right(ng-if='row.algus && !row.l6pp', ng-click='lendLendingRow(row)') Tagasta
-                                    tr
-                                        td(colspan=5)
-                                            input#search-item.form-control(is-loading, type='text', placeholder='-- lisa varustus --', ng-model='sData.addLendingRowQuery' ng-keyup='searchLendingRowItem($event)')
+                                tr(ng-if='sData.lending.staatus.value !== "archive"')
+                                    td(colspan=5)
+                                        input#search-item.form-control(is-loading, type='text', placeholder='-- lisa varustus --', ng-model='sData.addLendingRowQuery' ng-keyup='searchLendingRowItem($event)')
 
             .col-xs-12.col-sm-4.col-xs-offset-0
                     table.table
@@ -75,17 +75,17 @@ script(type='text/ng-template', id='lending')
                             tr.warning
                                 th KOKKU
                                 th.text-right(colspan=2) {{ sumInvoiceRows().toFixed(1).replace('.0', '.-') }}
-                                th(ng-if='!sData.lending.erply.value') &nbsp;
+                                th(ng-if='!sData.lending.erply') &nbsp;
 
         .row.spacer
 
-        .row(ng-if='sData.lendingRows.length > 0')
+        .row(ng-if='sData.lendingRows.length > 0 && sData.lending.staatus.value !== "archive"')
             .col-xs-12.text-center
-                button.btn.btn-lg.btn-info(ng-if='sData.lending.erply.value') Tagasta kõik
-                button.btn.btn-lg.btn-warning(ng-if='!sData.lending.erply.value') Väljasta kõik ja loo arve
+                button.btn.btn-lg.btn-warning(ng-if='!sData.lending.erply && sData.invoiceRows.length > 0', ng-click='lendAllAddInvoice()') Väljasta kõik ja loo arve
+                button.btn.btn-lg.btn-info(ng-if='sData.lending.erply', ng-click='lendAllAddInvoice()') Tagasta kõik
 
         .row.spacer
-            //- pre.col-xs-12 {{ sData.lending | json }}
+            //- pre.col-xs-12 {{ sData | json }}
 
     #select-item-modal.modal.fade(tabindex='-1', role='dialog')
         .modal-dialog
