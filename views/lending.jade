@@ -85,8 +85,9 @@ script(type='text/ng-template', id='lending')
 
         .row(ng-if='sData.lendingRows.length > 0 && sData.lending.staatus.value !== "archive"')
             .col-xs-12.text-center
-                button.btn.btn-lg.btn-warning(ng-if='!sData.lending.erply && sData.invoiceRows.length > 0', ng-click='lendAllAddInvoice()') Väljasta kõik ja loo arve
-                button.btn.btn-lg.btn-info(ng-if='sData.lending.erply', ng-click='lendAllAddInvoice()') Tagasta kõik
+                button.btn.btn-lg.btn-warning(ng-if='sData.lending.staatus.value !== "out" && sData.invoiceRows.length > 0', ng-click='lendAllAddInvoice()') Väljasta kõik ja loo arve
+                button.btn.btn-lg.btn-warning(ng-if='sData.lending.staatus.value !== "out" && sData.invoiceRows.length === 0', ng-click='lendAllAddInvoice()') Väljasta kõik
+                button.btn.btn-lg.btn-info(ng-if='sData.lending.staatus.value === "out"', ng-click='lendAllAddInvoice()') Tagasta kõik
 
         .row.spacer
             //- pre.col-xs-12 {{ sData.paymentType | json }}

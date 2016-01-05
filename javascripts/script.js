@@ -186,7 +186,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         callback(error)
                     } else {
                         $rootScope.rData.user = user
-                        callback()
+                        callback(null)
                     }
                 })
             },
@@ -197,22 +197,18 @@ angular.module('lumeparkApp', ['ngRoute'])
                 $scope.sData.lendings = []
                 async.each(lendings, function(lending) {
                     entu.getEntity(lending.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
-                        if(error) {
-                            callback(error)
-                        } else {
-                            entity.status = entity.staatus ? entity.staatus.value : 'archive'
-                            if(!$routeParams.filter || $routeParams.filter === entity.status) {
-                                $scope.sData.lendings.push(entity)
-                            }
-                            callback()
+                        if(error) { return callback(error) }
+
+                        entity.status = entity.staatus ? entity.staatus.value : 'archive'
+                        if(!$routeParams.filter || $routeParams.filter === entity.status) {
+                            $scope.sData.lendings.push(entity)
                         }
+                        callback(null)
                     })
                 }, callback)
             }
         ], function(error) {
-            if(error) {
-                cl(error)
-            }
+            if(error) { cl(error) }
         })
     }])
 
@@ -247,53 +243,33 @@ angular.module('lumeparkApp', ['ngRoute'])
                         callback(error)
                     } else {
                         $rootScope.rData.user = user
-                        callback()
+                        callback(null)
                     }
+                })
+            },
+            function getLending(callback) {
+                if(!lendingId) { return callback(null) }
+
+                entu.getEntity(lendingId, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
+                    if(error) { return callback(error) }
+
+                    $rootScope.rData.pageTitle = $routeParams.id === 'new' ? 'Uus' : '#' + entity._id
+
+                    $scope.sData.lending = entity
+                    for (var i in $scope.sData.lending) {
+                        if(!$scope.sData.lending.hasOwnProperty(i)) { continue }
+                        if(!$scope.sData.lending[i].db_value) { continue }
+                        $scope.sData.oldLending[i] = $scope.sData.lending[i].db_value
+                    }
+                    $scope.calculateDates()
+
+                    callback(null)
                 })
             },
             function getData(callback) {
                 async.parallel([
-                    function getLending(callback) {
-                        if(!lendingId) { return callback() }
-
-                        entu.getEntity(lendingId, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
-                            if(error) {
-                                callback(error)
-                            } else {
-                                $rootScope.rData.pageTitle = $routeParams.id === 'new' ? 'Uus' : '#' + entity._id
-
-                                $scope.sData.lending = entity
-                                for (var i in $scope.sData.lending) {
-                                    if(!$scope.sData.lending.hasOwnProperty(i)) { continue }
-                                    if(!$scope.sData.lending[i].db_value) { continue }
-                                    $scope.sData.oldLending[i] = $scope.sData.lending[i].db_value
-                                }
-                                $scope.calculateDates()
-
-                                if(!$scope.sData.lending.erply) { return callback() }
-                                entu.getErply('getSalesDocuments', { id: $scope.sData.lending.erply.value }, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, invoice) {
-                                    if(error) {
-                                        callback(error)
-                                    } else {
-                                        if(!invoice) { callback() }
-                                        if(!invoice[0]) { callback() }
-                                        if(!invoice[0].rows) { callback() }
-                                        for (var i in invoice[0].rows) {
-                                            if(!invoice[0].rows.hasOwnProperty(i)) { continue }
-                                            $scope.sData.invoiceRows.push({
-                                                id: invoice[0].rows[i].productID,
-                                                name: invoice[0].rows[i].itemName,
-                                                price: parseFloat(invoice[0].rows[i].price),
-                                                quantity: parseInt(invoice[0].rows[i].amount, 10)
-                                            })
-                                        }
-                                    }
-                                })
-                            }
-                        })
-                    },
                     function getLendingRows(callback) {
-                        if(!lendingId) { return callback() }
+                        if(!lendingId) { return callback(null) }
 
                         async.waterfall([
                             function getChilds(callback) {
@@ -303,73 +279,89 @@ angular.module('lumeparkApp', ['ngRoute'])
                                 $scope.sData.lendingRows = []
                                 async.each(lendingChilds, function(value, callback) {
                                     entu.getEntity(value.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
-                                        if(error) {
-                                            callback(error)
-                                        } else {
-                                            $scope.sData.lendingRows.push(entity)
-                                            callback()
-                                        }
+                                        if(error) { return callback(error) }
+
+                                        $scope.sData.lendingRows.push(entity)
+                                        callback(null)
                                     })
                                 }, callback)
                             }
                         ], callback)
                     },
+                    function getErplyInvoice(callback) {
+                        if(!$scope.sData.lending.erply) { return callback(null) }
+                        entu.getErply('getSalesDocuments', { id: $scope.sData.lending.erply.value }, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, invoice) {
+                            if(error) { return callback(error) }
+
+                            cl(invoice)
+
+                            if(!invoice) { callback(null) }
+                            if(!invoice.length === 0) { callback(null) }
+
+                            if(invoice[0].paymentType) {
+                                $scope.sData.paymentType = invoice[0].paymentType
+                            }
+                            if(invoice[0].rows) {
+                                for (var i in invoice[0].rows) {
+                                    if(!invoice[0].rows.hasOwnProperty(i)) { continue }
+                                    $scope.sData.invoiceRows.push({
+                                        id: invoice[0].rows[i].productID,
+                                        name: invoice[0].rows[i].itemName,
+                                        price: parseFloat(invoice[0].rows[i].price),
+                                        quantity: parseInt(invoice[0].rows[i].amount, 10)
+                                    })
+                                }
+                            }
+                        })
+                    },
                     function getErplyCustomers(callback) {
                         entu.getErply('getCustomers', {}, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, customers) {
-                            if(error) {
-                                callback(error)
-                            } else {
-                                $scope.sData.customers = []
-                                async.each(customers, function(item, callback) {
-                                    $scope.sData.customers.push({
-                                        id: item.customerID,
-                                        name: item.fullName.trim()
-                                    })
-                                    callback()
-                                }, callback)
-                            }
+                            if(error) { return callback(error) }
+
+                            $scope.sData.customers = []
+                            async.each(customers, function(item, callback) {
+                                $scope.sData.customers.push({
+                                    id: item.customerID,
+                                    name: item.fullName.trim()
+                                })
+                                callback(null)
+                            }, callback)
                         })
                     },
                     function getErplyPrices(callback) {
                         entu.getErply('getProducts', { groupID: 3 }, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, customers) {
-                            if(error) {
-                                callback(error)
-                            } else {
-                                $scope.sData.prices = []
-                                async.each(customers, function(item, callback) {
-                                    $scope.sData.prices.push({
-                                        id: item.productID,
-                                        name: item.name.trim(),
-                                        price: item.priceWithVat,
-                                        quantity: 1
-                                    })
-                                    callback()
-                                }, callback)
-                            }
+                            if(error) { return callback(error) }
+
+                            $scope.sData.prices = []
+                            async.each(customers, function(item, callback) {
+                                $scope.sData.prices.push({
+                                    id: item.productID,
+                                    name: item.name.trim(),
+                                    price: item.priceWithVat,
+                                    quantity: 1
+                                })
+                                callback(null)
+                            }, callback)
                         })
                     },
                     function getErplyPaymentTypes(callback) {
                         entu.getErply('getInvoicePaymentTypes', { groupID: 3 }, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, types) {
-                            if(error) {
-                                callback(error)
-                            } else {
-                                $scope.sData.paymentTypes = []
-                                for (var i in types) {
-                                    if (!types.hasOwnProperty(i)) { continue }
-                                    $scope.sData.paymentTypes.push({
-                                        id: types[i].type,
-                                        name: types[i].name
-                                    })
-                                }
+                            if(error) { return callback(error) }
+
+                            $scope.sData.paymentTypes = []
+                            for (var i in types) {
+                                if (!types.hasOwnProperty(i)) { continue }
+                                $scope.sData.paymentTypes.push({
+                                    id: types[i].type,
+                                    name: types[i].name
+                                })
                             }
                         })
                     },
                 ], callback)
             }
         ], function(error) {
-            if(error) {
-                cl(error)
-            }
+            if(error) { cl(error) }
         })
 
         $scope.calculateDates = function(argument) {
@@ -402,12 +394,12 @@ angular.module('lumeparkApp', ['ngRoute'])
                             callback(error)
                         } else {
                             $rootScope.rData.user = user
-                            callback()
+                            callback(null)
                         }
                     })
                 },
                 function addLendingEntity(callback) {
-                    if(lendingId) { return callback() }
+                    if(lendingId) { return callback(null) }
 
                     var lendingData = {
                         definition: 'laenutus',
@@ -417,7 +409,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                     entu.addEntity(614, lendingData, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, newEntity) {
                         lendingId = newEntity.id
                         $location.path('/lending/' + lendingId, false)
-                        callback()
+                        callback(null)
                     })
                 },
                 function changeLendingEntity(callback) {
@@ -431,26 +423,22 @@ angular.module('lumeparkApp', ['ngRoute'])
                 },
                 function getLending(callback) {
                     entu.getEntity(lendingId, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
-                        if(error) {
-                            callback(error)
-                        } else {
-                            $rootScope.rData.activeMenu = null
-                            $rootScope.rData.pageTitle = '#' + entity._id
+                        if(error) { return callback(error) }
 
-                            $scope.sData.lending = entity
-                            for (var i in $scope.sData.lending) {
-                                if(!$scope.sData.lending.hasOwnProperty(i)) { continue }
-                                if(!$scope.sData.lending[i].db_value) { continue }
-                                $scope.sData.oldLending[i] = $scope.sData.lending[i].db_value
-                            }
-                            callback()
+                        $rootScope.rData.activeMenu = null
+                        $rootScope.rData.pageTitle = '#' + entity._id
+
+                        $scope.sData.lending = entity
+                        for (var i in $scope.sData.lending) {
+                            if(!$scope.sData.lending.hasOwnProperty(i)) { continue }
+                            if(!$scope.sData.lending[i].db_value) { continue }
+                            $scope.sData.oldLending[i] = $scope.sData.lending[i].db_value
                         }
+                        callback(null)
                     })
                 }
             ], function(error) {
-                if(error) {
-                    cl(error)
-                }
+                if(error) { cl(error) }
                 if(property === 'algus') { $scope.calculateDates() }
             })
         }
@@ -468,7 +456,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                             callback(error)
                         } else {
                             $rootScope.rData.user = user
-                            callback()
+                            callback(null)
                         }
                     })
                 },
@@ -479,21 +467,17 @@ angular.module('lumeparkApp', ['ngRoute'])
                     $scope.sData.foundItems = []
                     async.each(lendings, function(lending) {
                         entu.getEntity(lending.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
-                            if(error) {
-                                callback(error)
-                            } else {
-                                $scope.sData.foundItems.push(entity)
-                                callback()
-                            }
+                            if(error) { return callback(error) }
+
+                            $scope.sData.foundItems.push(entity)
+                            callback(null)
                         })
                     }, callback)
                 }
             ], function(error) {
-                if(error) {
-                    cl(error)
-                } else {
-                    $('#select-item-modal').modal('show')
-                }
+                if(error) { cl(error) }
+
+                $('#select-item-modal').modal('show')
             })
 
         }
@@ -513,7 +497,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                             callback(error)
                         } else {
                             $rootScope.rData.user = user
-                            callback()
+                            callback(null)
                         }
                     })
                 },
@@ -529,18 +513,14 @@ angular.module('lumeparkApp', ['ngRoute'])
                 },
                 function getNewLendingRow(lendingRow, callback) {
                     entu.getEntity(lendingRow.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
-                        if(error) {
-                            callback(error)
-                        } else {
-                            $scope.sData.lendingRows.push(entity)
-                            callback()
-                        }
+                        if(error) { return callback(error) }
+
+                        $scope.sData.lendingRows.push(entity)
+                        callback(null)
                     })
                 }
             ], function(error) {
-                if(error) {
-                    cl(error)
-                }
+                if(error) { cl(error) }
             })
         }
 
@@ -555,7 +535,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                             callback(error)
                         } else {
                             $rootScope.rData.user = user
-                            callback()
+                            callback(null)
                         }
                     })
                 },
@@ -574,26 +554,22 @@ angular.module('lumeparkApp', ['ngRoute'])
                 },
                 function getNewLendingRow(lendingRow, callback) {
                     entu.getEntity(lendingRow.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
-                        if(error) {
-                            callback(error)
-                        } else {
-                            for (var r in $scope.sData.lendingRows) {
-                                if(!$scope.sData.lendingRows.hasOwnProperty(r)) { continue }
+                        if(error) { return callback(error) }
 
-                                if($scope.sData.lendingRows[r]._id === item._id) {
-                                    $scope.sData.lendingRows.splice(r, 1)
-                                    break
-                                }
+                        for (var r in $scope.sData.lendingRows) {
+                            if(!$scope.sData.lendingRows.hasOwnProperty(r)) { continue }
+
+                            if($scope.sData.lendingRows[r]._id === item._id) {
+                                $scope.sData.lendingRows.splice(r, 1)
+                                break
                             }
-                            $scope.sData.lendingRows.push(entity)
-                            callback()
                         }
+                        $scope.sData.lendingRows.push(entity)
+                        callback(null)
                     })
                 }
             ], function(error) {
-                if(error) {
-                    cl(error)
-                }
+                if(error) { cl(error) }
             })
         }
 
@@ -608,7 +584,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                             callback(error)
                         } else {
                             $rootScope.rData.user = user
-                            callback()
+                            callback(null)
                         }
                     })
                 },
@@ -628,15 +604,13 @@ angular.module('lumeparkApp', ['ngRoute'])
                         }
 
                         entu.changeEntity(item._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error) {
-                            if(error) {
-                                cl(error)
-                            }
+                            if(error) { cl(error) }
                         })
                     }
-                    callback()
+                    callback(null)
                 },
                 function createNewErplyInvoice(callback) {
-                    if($scope.sData.lending.erply) { return callback() }
+                    if($scope.sData.lending.erply || $scope.sData.invoiceRows.length === 0) { return callback(null, null) }
 
                     var params = {
                         type: 'CASHINVOICE',
@@ -661,7 +635,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                 },
                 function changeLendingEntity(invoice, callback) {
                     var lendingData = {}
-                    if(!$scope.sData.lending.erply) {
+                    if(!$scope.sData.lending.erply && invoice) {
                         if(!invoice[0]) { callback(invoice) }
                         if(!invoice[0].invoiceID) { callback(invoice) }
                         lendingData['laenutus-erply'] = invoice[0].invoiceID
@@ -676,11 +650,9 @@ angular.module('lumeparkApp', ['ngRoute'])
                     entu.changeEntity($scope.sData.lending._id, lendingData, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
                 },
             ], function(error) {
-                if(error) {
-                    cl(error)
-                } else {
-                    location.reload()
-                }
+                if(error) { cl(error) }
+
+                location.reload()
             })
         }
 
