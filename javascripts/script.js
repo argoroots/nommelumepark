@@ -89,7 +89,7 @@ angular.module('lumeparkApp', ['ngRoute'])
     .run(['$route', '$rootScope', '$location', function ($route, $rootScope, $location) {
         var original = $location.path
         $location.path = function (path, reload) {
-            if (reload === false) {
+            if(reload === false) {
                 var lastRoute = $route.current
                 var un = $rootScope.$on('$locationChangeSuccess', function () {
                     $route.current = lastRoute
@@ -262,12 +262,31 @@ angular.module('lumeparkApp', ['ngRoute'])
 
                                 $scope.sData.lending = entity
                                 for (var i in $scope.sData.lending) {
-                                    if (!$scope.sData.lending.hasOwnProperty(i)) { continue }
-                                    if (!$scope.sData.lending[i].db_value) { continue }
+                                    if(!$scope.sData.lending.hasOwnProperty(i)) { continue }
+                                    if(!$scope.sData.lending[i].db_value) { continue }
                                     $scope.sData.oldLending[i] = $scope.sData.lending[i].db_value
                                 }
                                 $scope.calculateDates()
-                                callback()
+
+                                if(!$scope.sData.lending.erply) { return callback() }
+                                entu.getErply('getSalesDocuments', { id: $scope.sData.lending.erply.value }, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, invoice) {
+                                    if(error) {
+                                        callback(error)
+                                    } else {
+                                        if(!invoice) { callback() }
+                                        if(!invoice[0]) { callback() }
+                                        if(!invoice[0].rows) { callback() }
+                                        for (var i in invoice[0].rows) {
+                                            if(!invoice[0].rows.hasOwnProperty(i)) { continue }
+                                            $scope.sData.invoiceRows.push({
+                                                id: invoice[0].rows[i].productID,
+                                                name: invoice[0].rows[i].itemName,
+                                                price: parseFloat(invoice[0].rows[i].price),
+                                                quantity: parseInt(invoice[0].rows[i].amount, 10)
+                                            })
+                                        }
+                                    }
+                                })
                             }
                         })
                     },
@@ -402,8 +421,8 @@ angular.module('lumeparkApp', ['ngRoute'])
 
                             $scope.sData.lending = entity
                             for (var i in $scope.sData.lending) {
-                                if (!$scope.sData.lending.hasOwnProperty(i)) { continue }
-                                if (!$scope.sData.lending[i].db_value) { continue }
+                                if(!$scope.sData.lending.hasOwnProperty(i)) { continue }
+                                if(!$scope.sData.lending[i].db_value) { continue }
                                 $scope.sData.oldLending[i] = $scope.sData.lending[i].db_value
                             }
                             callback()
@@ -541,7 +560,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                             callback(error)
                         } else {
                             for (var r in $scope.sData.lendingRows) {
-                                if (!$scope.sData.lendingRows.hasOwnProperty(r)) { continue }
+                                if(!$scope.sData.lendingRows.hasOwnProperty(r)) { continue }
 
                                 if($scope.sData.lendingRows[r]._id === item._id) {
                                     $scope.sData.lendingRows.splice(r, 1)
@@ -577,7 +596,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                 },
                 function editLendingRowEntities(callback) {
                     for (var r in $scope.sData.lendingRows) {
-                        if (!$scope.sData.lendingRows.hasOwnProperty(r)) { continue }
+                        if(!$scope.sData.lendingRows.hasOwnProperty(r)) { continue }
 
                         var item = $scope.sData.lendingRows[r]
 
@@ -607,7 +626,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         confirmInvoice: 0,
                     }
                     for (var i in $scope.sData.customers) {
-                        if (!$scope.sData.customers.hasOwnProperty(i)) { continue }
+                        if(!$scope.sData.customers.hasOwnProperty(i)) { continue }
                         if($scope.sData.lending.laenutaja.value === $scope.sData.customers[i].name) {
                             params.customerID = $scope.sData.customers[i].id
                             break
@@ -615,7 +634,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                     }
                     var n = 1
                     for (var i in $scope.sData.invoiceRows) {
-                        if (!$scope.sData.invoiceRows.hasOwnProperty(i)) { continue }
+                        if(!$scope.sData.invoiceRows.hasOwnProperty(i)) { continue }
                         params['productID' + n] = $scope.sData.invoiceRows[i].id
                         params['amount' + n] = $scope.sData.invoiceRows[i].quantity
                         n = n + 1
