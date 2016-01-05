@@ -38,14 +38,12 @@ script(type='text/ng-template', id='lending')
                                 tr
                                     th Varustus
                                     th Algus
-                                    th Periood
                                     th Lõpp
                                     th &nbsp;
                             tbody
                                 tr(ng-repeat='row in sData.lendingRows | filter : search | orderBy : "varustus.value"')
                                     td {{ row.varustus.value }}
                                     td {{ row.algus.value }}
-                                    td {{ row.kestvus.value }}
                                     td {{ row.l6pp.value }}
                                     td.text-right
                                         button.btn.btn-xs.btn-warning(ng-if='!row.algus || (row.algus && row.l6pp)', ng-click='lendLendingRow(row)') Väljasta
