@@ -293,10 +293,8 @@ angular.module('lumeparkApp', ['ngRoute'])
                         entu.getErply('getSalesDocuments', { id: $scope.sData.lending.erply.value }, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, invoice) {
                             if(error) { return callback(error) }
 
-                            cl(invoice)
-
-                            if(!invoice) { callback(null) }
-                            if(!invoice.length === 0) { callback(null) }
+                            if(!invoice) { return callback(null) }
+                            if(invoice.length === 0) { return callback(null) }
 
                             if(invoice[0].paymentType) {
                                 $scope.sData.paymentType = invoice[0].paymentType
@@ -636,8 +634,9 @@ angular.module('lumeparkApp', ['ngRoute'])
                 function changeLendingEntity(invoice, callback) {
                     var lendingData = {}
                     if(!$scope.sData.lending.erply && invoice) {
-                        if(!invoice[0]) { callback(invoice) }
-                        if(!invoice[0].invoiceID) { callback(invoice) }
+                        if(invoice.length === 0) { return callback(invoice) }
+                        if(!invoice[0].invoiceID) { return callback(invoice) }
+
                         lendingData['laenutus-erply'] = invoice[0].invoiceID
                     }
                     if(!$scope.sData.lending.staatus) {
