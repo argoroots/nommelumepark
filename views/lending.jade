@@ -8,24 +8,29 @@ script(type='text/ng-template', id='lending')
                 form.row
                     .form-group.col-xs-12.col-sm-8
                         label(for='laenutaja') Klient
-                        select#laenutaja.form-control(is-loading, ng-disabled='sData.customers.length < 1', ng-options='c.name as c.name group by c.name.substring(0, 1).toUpperCase() for c in sData.customers | orderBy : "name"', ng-model='sData.lending.laenutaja.db_value', ng-change='saveLending("laenutaja")')
+                        p(ng-if='sData.readOnly') {{ sData.lending.laenutaja.db_value }}
+                        select#laenutaja.form-control(ng-if='!sData.readOnly', is-loading, ng-disabled='sData.customers.length < 1', ng-options='c.name as c.name group by c.name.substring(0, 1).toUpperCase() for c in sData.customers | orderBy : "name"', ng-model='sData.lending.laenutaja.db_value', ng-change='saveLending("laenutaja")')
                             option(value='') -- vali klient --
 
                     .form-group.col-xs-12.col-sm-4
                         label(for='payment-type') Makseviis
-                        select#payment-type.form-control(ng-disabled='sData.paymentTypes.length < 1', ng-options='t.id as t.name for t in sData.paymentTypes | orderBy : "name"', ng-model='sData.paymentType')
+                        p(ng-if='sData.readOnly') {{ sData.paymentType }}
+                        select#payment-type.form-control(ng-if='!sData.readOnly', ng-disabled='sData.paymentTypes.length < 1', ng-options='t.id as t.name for t in sData.paymentTypes | orderBy : "name"', ng-model='sData.paymentType')
 
                     .form-group.col-xs-12
                         label(for='kirjeldus') Lisainfo
-                        input#kirjeldus.form-control(is-loading, type='text', ng-model='sData.lending.kirjeldus.db_value', ng-blur='saveLending("kirjeldus")')
+                        p(ng-if='sData.readOnly') {{ sData.lending.kirjeldus.db_value }}
+                        input#kirjeldus.form-control(ng-if='!sData.readOnly', is-loading, type='text', ng-model='sData.lending.kirjeldus.db_value', ng-blur='saveLending("kirjeldus")')
 
                     .form-group.col-xs-12.col-sm-6
                         label(for='algus') Broneeringu algus
-                        input#algus.form-control(is-loading, type='text', ng-model='sData.lending.algus.db_value', ng-blur='saveLending("algus")', placeholder='+5, today, now, 31.01.2015 14:00')
+                        p(ng-if='sData.readOnly') {{ sData.lending.algus.db_value }}
+                        input#algus.form-control(ng-if='!sData.readOnly', is-loading, type='text', ng-model='sData.lending.algus.db_value', ng-blur='saveLending("algus")', placeholder='+5, today, now, 31.01.2015 14:00')
 
                     .form-group.col-xs-12.col-sm-6
                         label(for='kestvus') Broneeringu kestvus
-                        select#kestvus.form-control(is-loading, ng-model='sData.lending.kestvus.db_value', ng-change='saveLending("kestvus")')
+                        p(ng-if='sData.readOnly') {{ sData.kestvus.algus.db_value }}
+                        select#kestvus.form-control(ng-if='!sData.readOnly', is-loading, ng-model='sData.lending.kestvus.db_value', ng-change='saveLending("kestvus")')
                             option(value='') -- vali kestvus --
                             option(ng-if='sData.lendingEnd.h1', value='1h') 1h - tagastus {{ sData.lendingEnd.h1 }}
                             option(ng-if='!sData.lendingEnd.h1', value='1h') 1h
@@ -43,16 +48,16 @@ script(type='text/ng-template', id='lending')
                                     th Varustus
                                     th Algus
                                     th Lõpp
-                                    th(ng-if='sData.lending.staatus.value !== "archive"') &nbsp;
+                                    th(ng-if='!sData.readOnly') &nbsp;
                             tbody
                                 tr(ng-repeat='row in sData.lendingRows | filter : search | orderBy : "varustus.value"')
                                     td {{ row.varustus.value }}
                                     td {{ row.algus.value }}
                                     td {{ row.l6pp.value }}
-                                    td.text-right(ng-if='sData.lending.staatus.value !== "archive"')
+                                    td.text-right(ng-if='!sData.readOnly')
                                         button.btn.btn-xs.btn-warning(ng-if='!row.algus || (row.algus && row.l6pp)', ng-click='lendLendingRow(row)') Väljasta
                                         button.btn.btn-xs.btn-info.pull-right(ng-if='row.algus && !row.l6pp', ng-click='lendLendingRow(row)') Tagasta
-                                tr(ng-if='sData.lending.staatus.value !== "archive"')
+                                tr(ng-if='!sData.readOnly')
                                     td(colspan=5)
                                         input#search-item.form-control(is-loading, type='text', placeholder='-- lisa varustus --', ng-model='sData.addLendingRowQuery' ng-keyup='searchLendingRowItem($event)')
 
@@ -64,7 +69,7 @@ script(type='text/ng-template', id='lending')
                                 th.warning ARVE
                                 th.warning.text-right(colspan=3)
                                     span(ng-if='sData.lending.erply.value') \#{{ sData.lending.erply.value }}
-                        tbody
+                        tbody(ng-if='!sData.readOnly || sData.invoiceRows.length > 0')
                             tr.warning(ng-repeat='row in sData.invoiceRows | orderBy : "name" track by $index')
                                 td {{ row.name }}
                                 td.text-right
@@ -83,11 +88,13 @@ script(type='text/ng-template', id='lending')
 
         .row.spacer
 
-        .row(ng-if='sData.lendingRows.length > 0 && sData.lending.staatus.value !== "archive"')
-            .col-xs-12.text-center
-                button.btn.btn-lg.btn-warning(ng-if='sData.lending.staatus.value !== "out" && sData.invoiceRows.length > 0', ng-click='lendAllAddInvoice()') Väljasta kõik ja loo arve
-                button.btn.btn-lg.btn-warning(ng-if='sData.lending.staatus.value !== "out" && sData.invoiceRows.length === 0', ng-click='lendAllAddInvoice()') Väljasta kõik
-                button.btn.btn-lg.btn-info(ng-if='sData.lending.staatus.value === "out"', ng-click='lendAllAddInvoice()') Tagasta kõik
+        .row(ng-if='sData.lendingRows.length > 0 && !sData.readOnly')
+            .col-xs-12.text-center(ng-if='sData.lending.staatus.value !== "out"')
+                button.btn.btn-lg.btn-warning(ng-if='!sData.lending.erply && sData.invoiceRows.length > 0', ng-click='lendAllAddInvoice()') Väljasta kõik ja loo arve
+                button.btn.btn-lg.btn-warning(ng-if='sData.lending.erply || sData.invoiceRows.length === 0', ng-click='lendAllAddInvoice()') Väljasta kõik
+            .col-xs-12.text-center(ng-if='sData.lending.staatus.value === "out"')
+                button.btn.btn-lg.btn-info(ng-if='!sData.lending.erply && sData.invoiceRows.length > 0', ng-click='lendAllAddInvoice()') Tagasta kõik ja loo arve
+                button.btn.btn-lg.btn-info(ng-if='sData.lending.erply || sData.invoiceRows.length === 0', ng-click='lendAllAddInvoice()') Tagasta kõik
 
         .row.spacer
             //- pre.col-xs-12 {{ sData.paymentType | json }}

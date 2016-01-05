@@ -172,7 +172,9 @@ angular.module('lumeparkApp', ['ngRoute'])
         if(!$rootScope.rData) { $rootScope.rData = {} }
 
         $rootScope.rData.activeMenu = $routeParams.filter
-        $rootScope.rData.pageTitle = $routeParams.filter === 'bron' ? 'Broneeringud' : 'Rendis'
+        if($routeParams.filter === 'bron') $rootScope.rData.pageTitle = 'Broneeringud'
+        if($routeParams.filter === 'bron') $rootScope.rData.pageTitle = 'Rendis'
+        if($routeParams.filter === 'archive') $rootScope.rData.pageTitle = 'Arhiiv'
 
         $scope.sData = {
             lendings: []
@@ -255,13 +257,20 @@ angular.module('lumeparkApp', ['ngRoute'])
 
                     $rootScope.rData.pageTitle = $routeParams.id === 'new' ? 'Uus' : '#' + entity._id
 
+                    if(entity.staatus) {
+                        $scope.sData.readOnly = entity.staatus.value === 'archive'
+                        $rootScope.rData.activeMenu = entity.staatus.value
+                    }
+
                     $scope.sData.lending = entity
+                    $scope.calculateDates()
+
                     for (var i in $scope.sData.lending) {
                         if(!$scope.sData.lending.hasOwnProperty(i)) { continue }
                         if(!$scope.sData.lending[i].db_value) { continue }
+
                         $scope.sData.oldLending[i] = $scope.sData.lending[i].db_value
                     }
-                    $scope.calculateDates()
 
                     callback(null)
                 })
@@ -438,6 +447,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                 }
             ], function(error) {
                 if(error) { cl(error) }
+
                 if(property === 'algus') { $scope.calculateDates() }
             })
         }
