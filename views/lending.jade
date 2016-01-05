@@ -44,12 +44,12 @@ script(type='text/ng-template', id='lending')
                             tbody
                                 tr(ng-repeat='row in sData.lendingRows | filter : search | orderBy : "varustus.value"')
                                     td {{ row.varustus.value }}
-                                    td {{ row.laenutuse-rida-bronnialgus.value }}
-                                    td {{ row.laenutuse-rida-kestus.value }}
-                                    td {{ row.laenutuse-rida-bronnil6pp.value }}
+                                    td {{ row.algus.value }}
+                                    td {{ row.kestvus.value }}
+                                    td {{ row.l6pp.value }}
                                     td.text-right
-                                        //- button.btn.btn-xs.btn-info.pull-right Tagasta
-                                        button.btn.btn-xs.btn-warning Väljasta
+                                        button.btn.btn-xs.btn-warning(ng-if='!row.algus || (row.algus && row.l6pp)', ng-click='lendLendingRow(row)') Väljasta
+                                        button.btn.btn-xs.btn-info.pull-right(ng-if='row.algus && !row.l6pp', ng-click='lendLendingRow(row)') Tagasta
                                     tr
                                         td(colspan=5)
                                             input#search-item.form-control(is-loading, type='text', placeholder='-- lisa varustus --', ng-model='sData.addLendingRowQuery' ng-keyup='searchLendingRowItem($event)')

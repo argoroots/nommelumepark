@@ -172,8 +172,8 @@ entu.addEntity = function(parentEntityId, properties, userId, userToken, http, c
 
 
 
-entu.changeEntity = function(parentEntityId, properties, userId, userToken, http, callback) {
-    http.put(entuAPI + 'entity-' + parentEntityId, properties, {
+entu.changeEntity = function(entityId, properties, userId, userToken, http, callback) {
+    http.put(entuAPI + 'entity-' + entityId, properties, {
             headers: {
                 'X-Auth-UserId': userId,
                 'X-Auth-Token': userToken

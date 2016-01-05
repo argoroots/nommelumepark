@@ -509,6 +509,57 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 
+        $scope.lendLendingRow = function(item) {
+            async.waterfall([
+                function getUser(callback) {
+                    entu.getUser($window.sessionStorage.getItem('userId'), $window.sessionStorage.getItem('userToken'), $http, function(error, user) {
+                        if(error) {
+                            $rootScope.rData.user = null
+                            callback(error)
+                        } else {
+                            $rootScope.rData.user = user
+                            callback()
+                        }
+                    })
+                },
+                function editLendingRowEntity(callback) {
+                    var lendingRow = {}
+                    if(!item.algus && !item.l6pp) {
+                        lendingRow['laenutuse-rida-algus'] = parseDate('now')
+                    } else if(item.algus && !item.l6pp) {
+                        lendingRow['laenutuse-rida-l6pp'] = parseDate('now')
+                    } else if(item.algus && item.l6pp) {
+                        lendingRow['laenutuse-rida-algus.' + item.algus.id] = parseDate('now')
+                        lendingRow['laenutuse-rida-l6pp.' + item.l6pp.id] = ''
+                    }
+
+                    entu.changeEntity(item._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
+                },
+                function getNewLendingRow(lendingRow, callback) {
+                    entu.getEntity(lendingRow.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
+                        if(error) {
+                            callback(error)
+                        } else {
+                            for (var r in $scope.sData.lendingRows) {
+                                if (!$scope.sData.lendingRows.hasOwnProperty(r)) { continue }
+
+                                if($scope.sData.lendingRows[r]._id === item._id) {
+                                    $scope.sData.lendingRows.splice(r, 1)
+                                    break
+                                }
+                            }
+                            $scope.sData.lendingRows.push(entity)
+                            callback()
+                        }
+                    })
+                }
+            ], function(error) {
+                if(error) {
+                    cl(error)
+                }
+            })
+        }
+
         $scope.addInvoiceRow = function(value) {
             if(!value) { return }
 
