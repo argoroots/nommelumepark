@@ -27,5 +27,5 @@ script(type='text/ng-template', id='lendings')
                                 a(ng-href='/#/lending/{{ lending._id }}') {{ lending.laenutaja.db_value || '...' }}
                             td {{ lending.algus.db_value }}
                             td {{ lending.kestvus.db_value }}
-                            td {{ lending.kirjeldus.db_value }}
+                            td {{ lending.info.db_value }}
                             td {{ lending.erply.db_value }}

@@ -258,7 +258,9 @@ angular.module('lumeparkApp', ['ngRoute'])
                     $rootScope.rData.pageTitle = $routeParams.id === 'new' ? 'Uus' : '#' + entity._id
 
                     if(entity.staatus) {
-                        $scope.sData.readOnly = entity.staatus.db_value === 'archive'
+                        $scope.sData.isBron = entity.staatus.db_value === 'bron'
+                        $scope.sData.isOut = entity.staatus.db_value === 'out'
+                        $scope.sData.isArchived = entity.staatus.db_value === 'archive'
                         $rootScope.rData.activeMenu = entity.staatus.db_value
                     }
 
@@ -603,9 +605,9 @@ angular.module('lumeparkApp', ['ngRoute'])
                         var item = $scope.sData.lendingRows[r]
 
                         var lendingRow = {}
-                        if($scope.sData.lending.staatus.db_value === 'bron' && !item.algus && !item.l6pp) {
+                        if($scope.sData.isBron && !item.algus && !item.l6pp) {
                             lendingRow['laenutuse-rida-algus'] = parseDate('now')
-                        } else if($scope.sData.lending.staatus.db_value === 'out' && item.algus && !item.l6pp){
+                        } else if($scope.sData.isOut && item.algus && !item.l6pp){
                             lendingRow['laenutuse-rida-l6pp'] = parseDate('now')
                         } else {
                             continue
@@ -649,9 +651,9 @@ angular.module('lumeparkApp', ['ngRoute'])
                     }
                     if(!$scope.sData.lending.staatus) {
                         lendingData['laenutus-staatus'] = 'out'
-                    } else if($scope.sData.lending.staatus.db_value === 'bron') {
+                    } else if($scope.sData.isBron) {
                         lendingData['laenutus-staatus.' + $scope.sData.lending.staatus.id] = 'out'
-                    } else if($scope.sData.lending.staatus.db_value === 'out') {
+                    } else if($scope.sData.isOut) {
                         lendingData['laenutus-staatus.' + $scope.sData.lending.staatus.id] = 'archive'
                     }
                     entu.changeEntity($scope.sData.lending._id, lendingData, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
