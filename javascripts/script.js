@@ -201,7 +201,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                     entu.getEntity(lending.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
                         if(error) { return callback(error) }
 
-                        entity.status = entity.staatus ? entity.staatus.value : 'archive'
+                        entity.status = entity.staatus ? entity.staatus.db_value : 'archive'
                         if(!$routeParams.filter || $routeParams.filter === entity.status) {
                             $scope.sData.lendings.push(entity)
                         }
@@ -258,8 +258,8 @@ angular.module('lumeparkApp', ['ngRoute'])
                     $rootScope.rData.pageTitle = $routeParams.id === 'new' ? 'Uus' : '#' + entity._id
 
                     if(entity.staatus) {
-                        $scope.sData.readOnly = entity.staatus.value === 'archive'
-                        $rootScope.rData.activeMenu = entity.staatus.value
+                        $scope.sData.readOnly = entity.staatus.db_value === 'archive'
+                        $rootScope.rData.activeMenu = entity.staatus.db_value
                     }
 
                     $scope.sData.lending = entity
@@ -275,7 +275,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                     callback(null)
                 })
             },
-            function getData(callback) {
+            function getOtherData(callback) {
                 async.parallel([
                     function getLendingRows(callback) {
                         if(!lendingId) { return callback(null) }
@@ -299,7 +299,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                     },
                     function getErplyInvoice(callback) {
                         if(!$scope.sData.lending.erply) { return callback(null) }
-                        entu.getErply('getSalesDocuments', { id: $scope.sData.lending.erply.value }, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, invoice) {
+                        entu.getErply('getSalesDocuments', { id: $scope.sData.lending.erply.db_value }, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, invoice) {
                             if(error) { return callback(error) }
 
                             if(!invoice) { return callback(null) }
@@ -374,7 +374,6 @@ angular.module('lumeparkApp', ['ngRoute'])
         $scope.calculateDates = function() {
             if($scope.sData.lending.algus) {
                 $scope.sData.lending.algus.db_value = $scope.sData.lending.algus.db_value.substring(0, 16)
-                $scope.sData.lending.algus.value = $scope.sData.lending.algus.value.substring(0, 16)
                 $scope.sData.lendingEnd = {
                     h1: Date.parse($scope.sData.lending.algus.db_value).add({ hours: 1 }).toString('HH:mm'),
                     h3: Date.parse($scope.sData.lending.algus.db_value).add({ hours: 3 }).toString('HH:mm')
@@ -516,7 +515,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         'laenutuse-rida-varustus': item._id
                     }
                     if($scope.sData.lending.algus) { lendingRow['laenutuse-rida-bronnialgus'] = $scope.sData.lending.algus.db_value }
-                    if($scope.sData.lending.kestvus) { lendingRow['laenutuse-rida-kestus'] = $scope.sData.lending.kestvus.value }
+                    if($scope.sData.lending.kestvus) { lendingRow['laenutuse-rida-kestus'] = $scope.sData.lending.kestvus.db_value }
 
                     entu.addEntity($scope.sData.lending._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
                 },
@@ -604,9 +603,9 @@ angular.module('lumeparkApp', ['ngRoute'])
                         var item = $scope.sData.lendingRows[r]
 
                         var lendingRow = {}
-                        if($scope.sData.lending.staatus.value === 'bron' && !item.algus && !item.l6pp) {
+                        if($scope.sData.lending.staatus.db_value === 'bron' && !item.algus && !item.l6pp) {
                             lendingRow['laenutuse-rida-algus'] = parseDate('now')
-                        } else if($scope.sData.lending.staatus.value === 'out' && item.algus && !item.l6pp){
+                        } else if($scope.sData.lending.staatus.db_value === 'out' && item.algus && !item.l6pp){
                             lendingRow['laenutuse-rida-l6pp'] = parseDate('now')
                         } else {
                             continue
@@ -626,7 +625,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                     }
                     for (var i in $scope.sData.customers) {
                         if(!$scope.sData.customers.hasOwnProperty(i)) { continue }
-                        if($scope.sData.lending.laenutaja.value === $scope.sData.customers[i].name) {
+                        if($scope.sData.lending.laenutaja.db_value === $scope.sData.customers[i].name) {
                             params.customerID = $scope.sData.customers[i].id
                             break
                         }
@@ -650,9 +649,9 @@ angular.module('lumeparkApp', ['ngRoute'])
                     }
                     if(!$scope.sData.lending.staatus) {
                         lendingData['laenutus-staatus'] = 'out'
-                    } else if($scope.sData.lending.staatus.value === 'bron') {
+                    } else if($scope.sData.lending.staatus.db_value === 'bron') {
                         lendingData['laenutus-staatus.' + $scope.sData.lending.staatus.id] = 'out'
-                    } else if($scope.sData.lending.staatus.value === 'out') {
+                    } else if($scope.sData.lending.staatus.db_value === 'out') {
                         lendingData['laenutus-staatus.' + $scope.sData.lending.staatus.id] = 'archive'
                     }
                     entu.changeEntity($scope.sData.lending._id, lendingData, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
