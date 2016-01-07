@@ -387,7 +387,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 
-        $scope.saveLending = function(property) {
+        $scope.changeLending = function(property) {
             if(!$scope.sData.lending[property]) { return }
             if($scope.sData.oldLending[property] && $scope.sData.lending[property].db_value === $scope.sData.oldLending[property]) { return }
 

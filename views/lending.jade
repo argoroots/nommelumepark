@@ -9,7 +9,7 @@ script(type='text/ng-template', id='lending')
                     .form-group.col-xs-12.col-sm-8
                         label(for='laenutaja') Klient
                         p(ng-if='sData.isArchived') {{ sData.lending.laenutaja.db_value }}
-                        select#laenutaja.form-control(ng-if='!sData.isArchived', is-loading, ng-disabled='sData.customers.length < 1', ng-options='c.name as c.name group by c.name.substring(0, 1).toUpperCase() for c in sData.customers | orderBy : "name"', ng-model='sData.lending.laenutaja.db_value', ng-change='saveLending("laenutaja")')
+                        select#laenutaja.form-control(ng-if='!sData.isArchived', is-loading, ng-disabled='sData.customers.length < 1', ng-options='c.name as c.name group by c.name.substring(0, 1).toUpperCase() for c in sData.customers | orderBy : "name"', ng-model='sData.lending.laenutaja.db_value', ng-change='changeLending("laenutaja")')
                             option(value='') -- vali klient --
 
                     .form-group.col-xs-12.col-sm-4
@@ -20,17 +20,17 @@ script(type='text/ng-template', id='lending')
                     .form-group.col-xs-12
                         label(for='info') Lisainfo
                         p(ng-if='sData.isArchived') {{ sData.lending.info.db_value }}
-                        input#info.form-control(ng-if='!sData.isArchived', is-loading, type='text', ng-model='sData.lending.info.db_value', ng-blur='saveLending("info")')
+                        input#info.form-control(ng-if='!sData.isArchived', is-loading, type='text', ng-model='sData.lending.info.db_value', ng-blur='changeLending("info")')
 
                     .form-group.col-xs-12.col-sm-6
                         label(for='algus') Broneeringu algus
                         p(ng-if='sData.isArchived') {{ sData.lending.algus.db_value }}
-                        input#algus.form-control(ng-if='!sData.isArchived', is-loading, type='text', ng-model='sData.lending.algus.db_value', ng-blur='saveLending("algus")', placeholder='+5, today, now, 31.01.2015 14:00')
+                        input#algus.form-control(ng-if='!sData.isArchived', is-loading, type='text', ng-model='sData.lending.algus.db_value', ng-blur='changeLending("algus")', placeholder='+5, today, now, 31.01.2015 14:00')
 
                     .form-group.col-xs-12.col-sm-6
                         label(for='kestvus') Rendiaeg
                         p(ng-if='sData.isArchived') {{ sData.kestvus.algus.db_value }}
-                        select#kestvus.form-control(ng-if='!sData.isArchived', is-loading, ng-model='sData.lending.kestvus.db_value', ng-change='saveLending("kestvus")')
+                        select#kestvus.form-control(ng-if='!sData.isArchived', is-loading, ng-model='sData.lending.kestvus.db_value', ng-change='changeLending("kestvus")')
                             option(value='') -- vali rendi aeg --
                             option(ng-if='sData.lendingEnd.h1', value='1h') 1h - tagastus {{ sData.lendingEnd.h1 }}
                             option(ng-if='!sData.lendingEnd.h1', value='1h') 1h
