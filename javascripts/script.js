@@ -172,9 +172,9 @@ angular.module('lumeparkApp', ['ngRoute'])
         if(!$rootScope.rData) { $rootScope.rData = {} }
 
         $rootScope.rData.activeMenu = $routeParams.filter
-        if($routeParams.filter === 'bron') $rootScope.rData.pageTitle = 'Broneeringud'
-        if($routeParams.filter === 'bron') $rootScope.rData.pageTitle = 'Rendis'
-        if($routeParams.filter === 'archive') $rootScope.rData.pageTitle = 'Arhiiv'
+        if($routeParams.filter === 'bron') { $rootScope.rData.pageTitle = 'Broneeringud' }
+        if($routeParams.filter === 'bron') { $rootScope.rData.pageTitle = 'Rendis' }
+        if($routeParams.filter === 'archive') { $rootScope.rData.pageTitle = 'Arhiiv' }
 
         $scope.sData = {
             lendings: []
