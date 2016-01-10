@@ -32,10 +32,10 @@ script(type='text/ng-template', id='lending')
                         p(ng-if='sData.isArchived') {{ sData.kestvus.algus.db_value }}
                         select#kestvus.form-control(ng-if='!sData.isArchived', is-loading, ng-model='sData.lending.kestvus.db_value', ng-change='changeLending("kestvus")')
                             option(value='') -- vali rendi aeg --
-                            option(ng-if='sData.lendingEnd.h1', value='1h') 1h - tagastus {{ sData.lendingEnd.h1 }}
-                            option(ng-if='!sData.lendingEnd.h1', value='1h') 1h
-                            option(ng-if='sData.lendingEnd.h3', value='3h') 3h - tagastus {{ sData.lendingEnd.h3 }}
-                            option(ng-if='!sData.lendingEnd.h3', value='3h') 3h
+                            option(ng-if='sData.lendingEndHours.one', value='1h') 1h - tagastus {{ sData.lendingEndHours.one }}
+                            option(ng-if='!sData.lendingEndHours.one', value='1h') 1h
+                            option(ng-if='sData.lendingEndHours.three', value='3h') 3h - tagastus {{ sData.lendingEndHours.three }}
+                            option(ng-if='!sData.lendingEndHours.three', value='3h') 3h
                             option(value='päev') päev
 
                 .row.spacer
@@ -97,7 +97,7 @@ script(type='text/ng-template', id='lending')
                 button.btn.btn-lg.btn-info(ng-if='sData.lending.erply || sData.invoiceRows.length === 0', ng-click='lendAllAddInvoice()') Tagasta kõik
 
         .row.spacer
-            //- pre.col-xs-12 {{ sData.paymentType | json }}
+            //- pre.col-xs-12 {{ sData.lendingRows | json }}
 
     #select-item-modal.modal.fade(tabindex='-1', role='dialog')
         .modal-dialog

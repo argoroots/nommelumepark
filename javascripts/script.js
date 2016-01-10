@@ -232,7 +232,9 @@ angular.module('lumeparkApp', ['ngRoute'])
             invoiceRows: [],
             paymentTypes: [],
             paymentType: 'CASH',
-            addLendingRowQuery: ''
+            addLendingRowQuery: '',
+            lendingEndHours: {},
+            lendingEnd: null
         }
 
         var lendingId = parseInt($routeParams.id, 10)
@@ -265,7 +267,6 @@ angular.module('lumeparkApp', ['ngRoute'])
                     }
 
                     $scope.sData.lending = entity
-                    $scope.calculateDates()
 
                     for (var i in $scope.sData.lending) {
                         if(!$scope.sData.lending.hasOwnProperty(i)) { continue }
@@ -276,6 +277,9 @@ angular.module('lumeparkApp', ['ngRoute'])
 
                     callback(null)
                 })
+            },
+            function calculateDates(callback) {
+                $scope.calculateDates(callback)
             },
             function getOtherData(callback) {
                 async.parallel([
@@ -373,16 +377,31 @@ angular.module('lumeparkApp', ['ngRoute'])
             if(error) { cl(error) }
         })
 
-        $scope.calculateDates = function() {
+
+
+        $scope.calculateDates = function(callback) {
             if($scope.sData.lending.algus) {
                 $scope.sData.lending.algus.db_value = $scope.sData.lending.algus.db_value.substring(0, 16)
-                $scope.sData.lendingEnd = {
-                    h1: Date.parse($scope.sData.lending.algus.db_value).add({ hours: 1 }).toString('HH:mm'),
-                    h3: Date.parse($scope.sData.lending.algus.db_value).add({ hours: 3 }).toString('HH:mm')
+                $scope.sData.lendingEndHours = {
+                    one: Date.parse($scope.sData.lending.algus.db_value).add({ hours: 1 }).toString('HH:mm'),
+                    three: Date.parse($scope.sData.lending.algus.db_value).add({ hours: 3 }).toString('HH:mm')
                 }
             } else {
-                $scope.sData.lendingEnd = {}
+                $scope.sData.lendingEndHours = {}
             }
+            if($scope.sData.lending.algus && $scope.sData.lending.kestvus) {
+                if($scope.sData.lending.kestvus.db_value === '1h') {
+                    $scope.sData.lendingEnd = Date.parse($scope.sData.lending.algus.db_value).add({ hours: 1 }).toString('yyyy-MM-dd HH:mm')
+                } else if($scope.sData.lending.kestvus.db_value === '3h') {
+                    $scope.sData.lendingEnd = Date.parse($scope.sData.lending.algus.db_value).add({ hours: 3 }).toString('yyyy-MM-dd HH:mm')
+                } else if($scope.sData.lending.kestvus.db_value === 'päev') {
+                    $scope.sData.lendingEnd = Date.parse($scope.sData.lending.algus.db_value).add({ days: 1 }).toString('yyyy-MM-dd 00:00')
+                }
+            } else {
+                $scope.sData.lendingEnd = null
+            }
+
+            callback(null)
         }
 
 
@@ -392,6 +411,7 @@ angular.module('lumeparkApp', ['ngRoute'])
             if($scope.sData.oldLending[property] && $scope.sData.lending[property].db_value === $scope.sData.oldLending[property]) { return }
 
             var lendingId = $scope.sData.lending._id
+            var lendingRowIds = []
 
             if(property === 'algus') { $scope.sData.lending[property].db_value = parseDate($scope.sData.lending[property].db_value) }
 
@@ -445,11 +465,57 @@ angular.module('lumeparkApp', ['ngRoute'])
                         }
                         callback(null)
                     })
-                }
+                },
+                function calculateDates(callback) {
+                    $scope.calculateDates(callback)
+                },
+                function changeLendingRowEntities(callback) {
+                    if(property !== 'algus' && property !== 'kestvus') { return callback(null) }
+
+                    async.each($scope.sData.lendingRows, function(row, callback) {
+                        lendingRowIds.push(row._id)
+
+                        var lendingRow = {}
+
+                        if(row.bronnialgus) {
+                            lendingRow['laenutuse-rida-bronnialgus.' + row.bronnialgus.id] = $scope.sData.lending.algus ? $scope.sData.lending.algus.db_value : ''
+                        } else {
+                            lendingRow['laenutuse-rida-bronnialgus'] = $scope.sData.lending.algus ? $scope.sData.lending.algus.db_value : ''
+                        }
+                        if(row.bronnil6pp) {
+                            lendingRow['laenutuse-rida-bronnil6pp.' + row.bronnil6pp.id] = $scope.sData.lendingEnd ? $scope.sData.lendingEnd : ''
+                        } else {
+                            lendingRow['laenutuse-rida-bronnil6pp'] = $scope.sData.lendingEnd ? $scope.sData.lendingEnd : ''
+                        }
+                        if(row.kestvus) {
+                            lendingRow['laenutuse-rida-kestvus.' + row.kestvus.id] = $scope.sData.lending.kestvus ? $scope.sData.lending.kestvus.db_value : ''
+                        } else {
+                            lendingRow['laenutuse-rida-kestvus'] = $scope.sData.lending.kestvus ? $scope.sData.lending.kestvus.db_value : ''
+                        }
+
+                        entu.changeEntity(row._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
+                    }, function(error) {
+                        if(error) { cl(error) }
+
+                        callback(null)
+                    })
+                },
+                function getLendingRows(callback) {
+                    if(property !== 'algus' && property !== 'kestvus') { return callback(null) }
+
+                    $scope.sData.lendingRows = []
+
+                    async.each(lendingRowIds, function(id, callback) {
+                        entu.getEntity(id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
+                            if(error) { return callback(error) }
+
+                            $scope.sData.lendingRows.push(entity)
+                            callback(null)
+                        })
+                    }, callback)
+                },
             ], function(error) {
                 if(error) { cl(error) }
-
-                if(property === 'algus') { $scope.calculateDates() }
             })
         }
 
@@ -517,6 +583,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         'laenutuse-rida-varustus': item._id
                     }
                     if($scope.sData.lending.algus) { lendingRow['laenutuse-rida-bronnialgus'] = $scope.sData.lending.algus.db_value }
+                    if($scope.sData.lendingEnd) { lendingRow['laenutuse-rida-bronnil6pp'] = $scope.sData.lendingEnd }
                     if($scope.sData.lending.kestvus) { lendingRow['laenutuse-rida-kestus'] = $scope.sData.lending.kestvus.db_value }
 
                     entu.addEntity($scope.sData.lending._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
