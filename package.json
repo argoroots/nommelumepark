@@ -4,7 +4,6 @@
     "author": "Argo Roots <argo@roots.ee>",
     "private": true,
     "devDependencies": {
-        "grunt-cli": "*",
         "grunt-contrib-clean": "*",
         "grunt-contrib-connect": "*",
         "grunt-contrib-copy": "*",
