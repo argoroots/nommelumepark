@@ -598,24 +598,22 @@ angular.module('lumeparkApp', ['ngRoute'])
                         }
                     })
                 },
-                function editLendingRowEntities(callback) {
-                    for (var r in $scope.sData.lendingRows) {
-                        if(!$scope.sData.lendingRows.hasOwnProperty(r)) { continue }
-
-                        var item = $scope.sData.lendingRows[r]
-
+                function changeLendingRowEntities(callback) {
+                    async.each($scope.sData.lendingRows, function(row, callback) {
                         var lendingRow = {}
-                        if($scope.sData.isBron && !item.algus && !item.l6pp) {
+                        if($scope.sData.isBron && !row.algus && !row.l6pp) {
                             lendingRow['laenutuse-rida-algus'] = parseDate('now')
-                        } else if($scope.sData.isOut && item.algus && !item.l6pp){
+                        } else if($scope.sData.isOut && row.algus && !row.l6pp){
                             lendingRow['laenutuse-rida-l6pp'] = parseDate('now')
                         } else {
-                            continue
+                            return callback(null)
                         }
+                        entu.changeEntity(row._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
+                    }, function(error) {
+                        if(error) { cl(error) }
 
-                        entu.changeEntity(item._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http)
-                    }
-                    callback(null)
+                        callback(null)
+                    })
                 },
                 function createNewErplyInvoice(callback) {
                     if($scope.sData.lending.erply || $scope.sData.invoiceRows.length === 0) { return callback(null, null) }
