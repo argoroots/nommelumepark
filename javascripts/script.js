@@ -381,7 +381,6 @@ angular.module('lumeparkApp', ['ngRoute'])
 
         $scope.calculateDates = function(callback) {
             if($scope.sData.lending.algus) {
-                $scope.sData.lending.algus.db_value = $scope.sData.lending.algus.db_value.substring(0, 16)
                 $scope.sData.lendingEndHours = {
                     one: Date.parse($scope.sData.lending.algus.db_value).add({ hours: 1 }).toString('HH:mm'),
                     three: Date.parse($scope.sData.lending.algus.db_value).add({ hours: 3 }).toString('HH:mm')

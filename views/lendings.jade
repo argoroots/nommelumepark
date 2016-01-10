@@ -25,7 +25,7 @@ script(type='text/ng-template', id='lendings')
                         tr(ng-repeat='lending in sData.lendings | filter : search | orderBy : "status"')
                             th
                                 a(ng-href='/#/lending/{{ lending._id }}') {{ lending.laenutaja.db_value || '...' }}
-                            td {{ lending.algus.db_value }}
+                            td {{ lending.algus.db_value.substring(0, 16) }}
                             td {{ lending.kestvus.db_value }}
                             td {{ lending.info.db_value }}
                             td {{ lending.erply.db_value }}

@@ -24,7 +24,7 @@ script(type='text/ng-template', id='lending')
 
                     .form-group.col-xs-12.col-sm-6
                         label(for='algus') Broneeringu algus
-                        p(ng-if='sData.isArchived') {{ sData.lending.algus.db_value }}
+                        p(ng-if='sData.isArchived') {{ sData.lending.algus.db_value.substring(0, 16) }}
                         input#algus.form-control(ng-if='!sData.isArchived', is-loading, type='text', ng-model='sData.lending.algus.db_value', ng-blur='changeLending("algus")', placeholder='+5, today, now, 31.01.2015 14:00')
 
                     .form-group.col-xs-12.col-sm-6
@@ -52,8 +52,8 @@ script(type='text/ng-template', id='lending')
                             tbody
                                 tr(ng-repeat='row in sData.lendingRows | filter : search | orderBy : "varustus.value"')
                                     td {{ row.varustus.value }}
-                                    td {{ row.algus.db_value }}
-                                    td {{ row.l6pp.db_value }}
+                                    td {{ row.algus.db_value.substring(0, 16) }}
+                                    td {{ row.l6pp.db_value.substring(0, 16) }}
                                     td.text-right(ng-if='!sData.isArchived')
                                         button.btn.btn-xs.btn-warning(ng-if='!row.algus || (row.algus && row.l6pp)', ng-click='lendLendingRow(row)') Väljasta
                                         button.btn.btn-xs.btn-info.pull-right(ng-if='row.algus && !row.l6pp', ng-click='lendLendingRow(row)') Tagasta
