@@ -233,8 +233,7 @@ angular.module('lumeparkApp', ['ngRoute'])
             paymentTypes: [],
             paymentType: 'CASH',
             addLendingRowQuery: '',
-            lendingEndHours: {},
-            lendingEnd: null
+            lendingEndHours: {}
         }
 
         var lendingId = parseInt($routeParams.id, 10)
@@ -295,6 +294,11 @@ angular.module('lumeparkApp', ['ngRoute'])
                                 async.each(lendingChilds, function(value, callback) {
                                     entu.getEntity(value.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
                                         if(error) { return callback(error) }
+
+                                        if(entity.algus) {
+                                            var lopp = entity.lopp ? Date.parse(entity.lopp.db_value) : new Date()
+                                            // entity.retyrnTime =
+                                        }
 
                                         $scope.sData.lendingRows.push(entity)
                                         callback(null)
@@ -383,22 +387,11 @@ angular.module('lumeparkApp', ['ngRoute'])
             if($scope.sData.lending.algus) {
                 $scope.sData.lending.algus.db_value = $scope.sData.lending.algus.db_value.substring(0, 16)
                 $scope.sData.lendingEndHours = {
-                    one: Date.parse($scope.sData.lending.algus.db_value).add({ hours: 1 }).toString('HH:mm'),
-                    three: Date.parse($scope.sData.lending.algus.db_value).add({ hours: 3 }).toString('HH:mm')
+                    one: Date.parse($scope.sData.lending.algus.db_value).addHours(1).toString('HH:mm'),
+                    three: Date.parse($scope.sData.lending.algus.db_value).addHours(3).toString('HH:mm')
                 }
             } else {
                 $scope.sData.lendingEndHours = {}
-            }
-            if($scope.sData.lending.algus && $scope.sData.lending.kestvus) {
-                if($scope.sData.lending.kestvus.db_value === '1h') {
-                    $scope.sData.lendingEnd = Date.parse($scope.sData.lending.algus.db_value).add({ hours: 1 }).toString('yyyy-MM-dd HH:mm')
-                } else if($scope.sData.lending.kestvus.db_value === '3h') {
-                    $scope.sData.lendingEnd = Date.parse($scope.sData.lending.algus.db_value).add({ hours: 3 }).toString('yyyy-MM-dd HH:mm')
-                } else if($scope.sData.lending.kestvus.db_value === 'päev') {
-                    $scope.sData.lendingEnd = Date.parse($scope.sData.lending.algus.db_value).add({ days: 1 }).toString('yyyy-MM-dd 00:00')
-                }
-            } else {
-                $scope.sData.lendingEnd = null
             }
 
             callback(null)
