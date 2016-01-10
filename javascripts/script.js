@@ -482,11 +482,6 @@ angular.module('lumeparkApp', ['ngRoute'])
                         } else {
                             lendingRow['laenutuse-rida-bronnialgus'] = $scope.sData.lending.algus ? $scope.sData.lending.algus.db_value : ''
                         }
-                        if(row.bronnil6pp) {
-                            lendingRow['laenutuse-rida-bronnil6pp.' + row.bronnil6pp.id] = $scope.sData.lendingEnd ? $scope.sData.lendingEnd : ''
-                        } else {
-                            lendingRow['laenutuse-rida-bronnil6pp'] = $scope.sData.lendingEnd ? $scope.sData.lendingEnd : ''
-                        }
                         if(row.kestvus) {
                             lendingRow['laenutuse-rida-kestvus.' + row.kestvus.id] = $scope.sData.lending.kestvus ? $scope.sData.lending.kestvus.db_value : ''
                         } else {
@@ -583,7 +578,6 @@ angular.module('lumeparkApp', ['ngRoute'])
                         'laenutuse-rida-varustus': item._id
                     }
                     if($scope.sData.lending.algus) { lendingRow['laenutuse-rida-bronnialgus'] = $scope.sData.lending.algus.db_value }
-                    if($scope.sData.lendingEnd) { lendingRow['laenutuse-rida-bronnil6pp'] = $scope.sData.lendingEnd }
                     if($scope.sData.lending.kestvus) { lendingRow['laenutuse-rida-kestus'] = $scope.sData.lending.kestvus.db_value }
 
                     entu.addEntity($scope.sData.lending._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
