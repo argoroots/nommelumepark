@@ -489,11 +489,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         }
 
                         entu.changeEntity(row._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
-                    }, function(error) {
-                        if(error) { cl(error) }
-
-                        callback(null)
-                    })
+                    }, callback)
                 },
                 function getLendingRows(callback) {
                     if(property !== 'algus' && property !== 'kestvus') { return callback(null) }
