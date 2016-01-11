@@ -542,7 +542,12 @@ angular.module('lumeparkApp', ['ngRoute'])
                             $scope.sData.lendingRows.push(entity)
                             callback(null)
                         })
-                    }, callback)
+                    }, function(error) {
+                        if(error) { callback(error) }
+
+                        $scope.calculateReturnTime()
+                        callback(null)
+                    })
                 },
             ], function(error) {
                 if(error) { cl(error) }
