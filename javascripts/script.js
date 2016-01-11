@@ -338,6 +338,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         ], function(error) {
                             if(error) { callback(error) }
 
+                            $scope.calculateReturnTime()
                             $interval($scope.calculateReturnTime, 10000)
                             callback(null)
                         })
