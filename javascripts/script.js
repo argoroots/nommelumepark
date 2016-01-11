@@ -15,6 +15,41 @@ var parseDate = function(time) {
 
 
 
+var getReturnTime = function(out, length, back) {
+    if(!out || !length) { return }
+
+    var endTimePromise
+    var endTimeReal
+    var dateDiff
+    var sign
+
+    if(length.db_value === '1h') {
+        endTimePromise = Date.parse(out.db_value).addHours(1)
+    } else if(length.db_value === '3h') {
+        endTimePromise = Date.parse(out.db_value).addHours(3)
+    } else if(length.db_value === 'päev') {
+        endTimePromise = Date.parse(out.db_value).addDays(1).clearTime()
+    }
+
+    if(back) {
+        endTimeReal = Date.parse(back.db_value)
+    } else {
+        endTimeReal = Date.parse('now')
+    }
+
+    if(endTimePromise >= endTimeReal) {
+        dateDiff = new Date(endTimePromise - endTimeReal)
+        sign = '-'
+    } else {
+        dateDiff = new Date(endTimeReal - endTimePromise)
+        sign = '+'
+    }
+
+    return sign + dateDiff.addMinutes(Date.parse('now').getTimezoneOffset()).toString('HH:mm')
+}
+
+
+
 angular.module('lumeparkApp', ['ngRoute'])
 
 
@@ -217,7 +252,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 //LENDING
-    .controller('lendingCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$location', '$window', function($scope, $rootScope, $http, $routeParams, $location, $window) {
+    .controller('lendingCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$location', '$window', '$interval', function($scope, $rootScope, $http, $routeParams, $location, $window, $interval) {
         if(!$rootScope.rData) { $rootScope.rData = {} }
 
         $rootScope.rData.activeMenu = $routeParams.id
@@ -295,17 +330,17 @@ angular.module('lumeparkApp', ['ngRoute'])
                                     entu.getEntity(value.id, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, function(error, entity) {
                                         if(error) { return callback(error) }
 
-                                        if(entity.algus) {
-                                            var lopp = entity.lopp ? Date.parse(entity.lopp.db_value) : new Date()
-                                            // entity.retyrnTime =
-                                        }
-
                                         $scope.sData.lendingRows.push(entity)
                                         callback(null)
                                     })
                                 }, callback)
                             }
-                        ], callback)
+                        ], function(error) {
+                            if(error) { callback(error) }
+
+                            $interval($scope.calculateReturnTime, 10000)
+                            callback(null)
+                        })
                     },
                     function getErplyInvoice(callback) {
                         if(!$scope.sData.lending.erply) { return callback(null) }
@@ -376,7 +411,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         })
                     },
                 ], callback)
-            }
+            },
         ], function(error) {
             if(error) { cl(error) }
         })
@@ -395,6 +430,16 @@ angular.module('lumeparkApp', ['ngRoute'])
             }
 
             callback(null)
+        }
+
+
+
+        $scope.calculateReturnTime = function() {
+            for (var i in $scope.sData.lendingRows) {
+                if(!$scope.sData.lendingRows.hasOwnProperty(i)) { continue }
+
+                $scope.sData.lendingRows[i].returnTime = getReturnTime($scope.sData.lendingRows[i].algus, $scope.sData.lendingRows[i].kestvus, $scope.sData.lendingRows[i].l6pp)
+            }
         }
 
 
@@ -567,7 +612,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                         'laenutuse-rida-varustus': item._id
                     }
                     if($scope.sData.lending.algus) { lendingRow['laenutuse-rida-bronnialgus'] = $scope.sData.lending.algus.db_value }
-                    if($scope.sData.lending.kestvus) { lendingRow['laenutuse-rida-kestus'] = $scope.sData.lending.kestvus.db_value }
+                    if($scope.sData.lending.kestvus) { lendingRow['laenutuse-rida-kestvus'] = $scope.sData.lending.kestvus.db_value }
 
                     entu.addEntity($scope.sData.lending._id, lendingRow, $rootScope.rData.user.id, $rootScope.rData.user.token, $http, callback)
                 },

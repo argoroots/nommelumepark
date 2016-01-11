@@ -46,15 +46,15 @@ script(type='text/ng-template', id='lending')
                             thead
                                 tr
                                     th Varustus
-                                    th Algus
-                                    th Lõpp
-                                    th(ng-if='!sData.isArchived') &nbsp;
+                                    th.text-center Algus
+                                    th.text-center(colspan=2) Lõpp
                             tbody
-                                tr(ng-repeat='row in sData.lendingRows | filter : search | orderBy : "varustus.value"')
+                                tr(ng-repeat='row in sData.lendingRows | filter : search | orderBy : ["varustus.value", "l6pp.db_value"]', ng-class='{"return-time-over": row.returnTime.substring(0, 1) === "+"}')
                                     td {{ row.varustus.value }}
-                                    td {{ row.algus.db_value.substring(0, 16) }}
-                                    td {{ row.l6pp.db_value.substring(0, 16) }}
-                                    td.text-right(ng-if='!sData.isArchived')
+                                    td.text-center {{ row.algus.db_value.substring(0, 16) }}
+                                    td.text-right(ng-if='row.l6pp') {{ row.l6pp.db_value.substring(0, 16) }}
+                                    td.text-right {{ row.returnTime }}
+                                    td.text-right(ng-if='!sData.isArchived && !row.l6pp')
                                         button.btn.btn-xs.btn-warning(ng-if='!row.algus || (row.algus && row.l6pp)', ng-click='lendLendingRow(row)') Väljasta
                                         button.btn.btn-xs.btn-info.pull-right(ng-if='row.algus && !row.l6pp', ng-click='lendLendingRow(row)') Tagasta
                                 tr(ng-if='!sData.isArchived')
