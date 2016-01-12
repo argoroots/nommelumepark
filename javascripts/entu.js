@@ -122,25 +122,6 @@ entu.getChilds = function(entityId, userId, userToken, http, callback) {
 
 
 
-entu.getErply = function(method, params, userId, userToken, http, callback) {
-    http.post(erplyAPI + method, params, {
-            headers: {
-                'X-Auth-UserId': userId,
-                'X-Auth-Token': userToken
-            }
-        })
-        .success(function(data) {
-            if(!data.result) { return callback(data) }
-
-            callback(null, data.result)
-        })
-        .error(function(error) {
-            callback(error)
-        })
-}
-
-
-
 entu.addEntity = function(parentEntityId, properties, userId, userToken, http, callback) {
     http.post(entuAPI + 'entity-' + parentEntityId, properties, {
             headers: {
@@ -162,6 +143,25 @@ entu.addEntity = function(parentEntityId, properties, userId, userToken, http, c
 
 entu.changeEntity = function(entityId, properties, userId, userToken, http, callback) {
     http.put(entuAPI + 'entity-' + entityId, properties, {
+            headers: {
+                'X-Auth-UserId': userId,
+                'X-Auth-Token': userToken
+            }
+        })
+        .success(function(data) {
+            if(!data.result) { return callback(data) }
+
+            callback(null, data.result)
+        })
+        .error(function(error) {
+            callback(error)
+        })
+}
+
+
+
+entu.getErply = function(method, params, userId, userToken, http, callback) {
+    http.post(erplyAPI + method, params, {
             headers: {
                 'X-Auth-UserId': userId,
                 'X-Auth-Token': userToken
