@@ -203,8 +203,9 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 // LENDINGS
-    .controller('lendingsCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', function($scope, $rootScope, $http, $routeParams, $window) {
+    .controller('lendingsCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$window', '$interval', function($scope, $rootScope, $http, $routeParams, $window, $interval) {
         if(!$rootScope.rData) { $rootScope.rData = {} }
+        if($rootScope.rData.calculateReturnTimeInterval) { $interval.cancel($rootScope.rData.calculateReturnTimeInterval) }
 
         $rootScope.rData.activeMenu = $routeParams.filter
         if($routeParams.filter === 'bron') { $rootScope.rData.pageTitle = 'Broneeringud' }
@@ -254,6 +255,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 //LENDING
     .controller('lendingCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$location', '$window', '$interval', function($scope, $rootScope, $http, $routeParams, $location, $window, $interval) {
         if(!$rootScope.rData) { $rootScope.rData = {} }
+        if($rootScope.rData.calculateReturnTimeInterval) { $interval.cancel($rootScope.rData.calculateReturnTimeInterval) }
 
         $rootScope.rData.activeMenu = $routeParams.id
         $rootScope.rData.pageTitle = $routeParams.id === 'new' ? 'Uus' : '#' + $routeParams.id
@@ -339,7 +341,7 @@ angular.module('lumeparkApp', ['ngRoute'])
                             if(error) { callback(error) }
 
                             $scope.calculateReturnTime()
-                            $interval($scope.calculateReturnTime, 10000)
+                            $rootScope.rData.calculateReturnTimeInterval = $interval($scope.calculateReturnTime, 10000)
                             callback(null)
                         })
                     },
