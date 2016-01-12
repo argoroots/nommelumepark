@@ -11,9 +11,7 @@ entu.getAuthUrl = function(state, redirect_url, http, callback) {
 
             callback(null, data.result)
         })
-        .error(function(error) {
-            callback(error)
-        })
+        .error(callback)
 }
 
 
@@ -36,9 +34,7 @@ entu.getUser = function(userId, userToken, http, callback) {
 
             callback(null, user)
         })
-        .error(function(error) {
-            callback(error)
-        })
+        .error(callback)
 }
 
 
@@ -66,9 +62,7 @@ var getEntity = function(entityId, userId, userToken, http, callback) {
 
             callback(null, entity)
         })
-        .error(function(error) {
-            callback(error)
-        })
+        .error(callback)
 }
 entu.getEntity = getEntity
 
@@ -90,9 +84,7 @@ entu.getEntities = function(params, userId, userToken, http, callback) {
                 entu.getEntity(entity.id, userId, userToken, http, callback)
             }, callback)
         })
-        .error(function(error) {
-            callback(error)
-        })
+        .error(callback)
 }
 
 
@@ -120,9 +112,7 @@ entu.getChilds = function(entityId, userId, userToken, http, callback) {
                 entu.getEntity(id, userId, userToken, http, callback)
             }, callback)
         })
-        .error(function(error) {
-            callback(error)
-        })
+        .error(callback)
 }
 
 
@@ -151,9 +141,7 @@ entu.getReferrals = function(entityId, userId, userToken, http, callback) {
                 entu.getEntity(id, userId, userToken, http, callback)
             }, callback)
         })
-        .error(function(error) {
-            callback(error)
-        })
+        .error(callback)
 }
 
 
@@ -170,9 +158,7 @@ entu.addEntity = function(parentEntityId, properties, userId, userToken, http, c
 
             callback(null, data.result)
         })
-        .error(function(error) {
-            callback(error)
-        })
+        .error(callback)
 }
 
 
@@ -189,9 +175,7 @@ entu.changeEntity = function(entityId, properties, userId, userToken, http, call
 
             callback(null, data.result)
         })
-        .error(function(error) {
-            callback(error)
-        })
+        .error(callback)
 }
 
 
@@ -208,7 +192,5 @@ entu.getErply = function(method, params, userId, userToken, http, callback) {
 
             callback(null, data.result)
         })
-        .error(function(error) {
-            callback(error)
-        })
+        .error(callback)
 }
