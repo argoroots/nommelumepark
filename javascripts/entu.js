@@ -43,28 +43,7 @@ entu.getUser = function(userId, userToken, http, callback) {
 
 
 
-entu.getEntities = function(params, userId, userToken, http, callback) {
-    http.get(entuAPI + 'entity', {
-            headers: {
-                'X-Auth-UserId': userId,
-                'X-Auth-Token': userToken
-            },
-            params: params
-        })
-        .success(function(data) {
-            if(!data.result) { return callback(data) }
-            if(data.result.length === 0) { return callback(data) }
-
-            callback(null, data.result)
-        })
-        .error(function(error) {
-            callback(error)
-        })
-}
-
-
-
-entu.getEntity = function(entityId, userId, userToken, http, callback) {
+var getEntity = function(entityId, userId, userToken, http, callback) {
     http.get(entuAPI + 'entity-' + entityId, {
             headers: {
                 'X-Auth-UserId': userId,
@@ -91,6 +70,30 @@ entu.getEntity = function(entityId, userId, userToken, http, callback) {
             callback(error)
         })
 }
+entu.getEntity = getEntity
+
+
+
+entu.getEntities = function(params, userId, userToken, http, callback) {
+    http.get(entuAPI + 'entity', {
+            headers: {
+                'X-Auth-UserId': userId,
+                'X-Auth-Token': userToken
+            },
+            params: params
+        })
+        .success(function(data) {
+            if(!data.result) { return callback(data) }
+            if(data.result.length === 0) { return callback(data) }
+
+            async.map(data.result, function(entity, callback) {
+                entu.getEntity(entity.id, userId, userToken, http, callback)
+            }, callback)
+        })
+        .error(function(error) {
+            callback(error)
+        })
+}
 
 
 
@@ -104,16 +107,49 @@ entu.getChilds = function(entityId, userId, userToken, http, callback) {
         .success(function(data) {
             if(!data.result) { return callback(data) }
 
-            var entities = []
+            var ids = []
             for(var i in data.result) {
                 if(!data.result.hasOwnProperty(i)) { continue }
                 for(var n in data.result[i].entities) {
                     if(!data.result[i].entities.hasOwnProperty(n)) { continue }
-                    entities.push(data.result[i].entities[n])
+                    ids.push(data.result[i].entities[n])
                 }
             }
 
-            callback(null, entities)
+            async.map(ids, function(id, callback) {
+                entu.getEntity(id, userId, userToken, http, callback)
+            }, callback)
+        })
+        .error(function(error) {
+            callback(error)
+        })
+}
+
+
+
+entu.getReferrals = function(entityId, userId, userToken, http, callback) {
+    http.get(entuAPI + 'entity-' + entityId +'/referrals', {
+            headers: {
+                'X-Auth-UserId': userId,
+                'X-Auth-Token': userToken
+            },
+            params: params
+        })
+        .success(function(data) {
+            if(!data.result) { return callback(data) }
+
+            var ids = []
+            for(var i in data.result) {
+                if(!data.result.hasOwnProperty(i)) { continue }
+                for(var n in data.result[i].entities) {
+                    if(!data.result[i].entities.hasOwnProperty(n)) { continue }
+                    ids.push(data.result[i].entities[n])
+                }
+            }
+
+            async.map(ids, function(id, callback) {
+                entu.getEntity(id, userId, userToken, http, callback)
+            }, callback)
         })
         .error(function(error) {
             callback(error)
