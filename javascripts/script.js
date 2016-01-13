@@ -16,36 +16,32 @@ var parseDate = function(time) {
 
 
 var getReturnTime = function(out, length, back) {
-    if(!out || !length) { return }
+    if(!length) { return }
 
     var endTimePromise
     var endTimeReal
-    var dateDiff
-    var sign
+    var result = {}
 
+    var outDt = out ? Date.parse(out.db_value) : Date.parse('now')
     if(length.db_value === '1h') {
-        endTimePromise = Date.parse(out.db_value).addHours(1)
+        endTimePromise = outDt.addHours(1)
     } else if(length.db_value === '3h') {
-        endTimePromise = Date.parse(out.db_value).addHours(3)
+        endTimePromise = outDt.addHours(3)
     } else if(length.db_value === 'päev') {
-        endTimePromise = Date.parse(out.db_value).addDays(1).clearTime()
+        endTimePromise = outDt.addDays(1).clearTime()
     }
 
-    if(back) {
-        endTimeReal = Date.parse(back.db_value)
-    } else {
-        endTimeReal = Date.parse('now')
-    }
+    var endTimeReal = back ? Date.parse(back.db_value) : Date.parse('now')
 
     if(endTimePromise >= endTimeReal) {
-        dateDiff = new Date(endTimePromise - endTimeReal)
-        sign = '-'
+        result.diff = (new Date(endTimePromise - endTimeReal)).addMinutes(Date.parse('now').getTimezoneOffset()).toString('HH:mm')
+        result.sign = '-'
     } else {
-        dateDiff = new Date(endTimeReal - endTimePromise)
-        sign = '+'
+        result.diff = (new Date(endTimeReal - endTimePromise)).addMinutes(Date.parse('now').getTimezoneOffset()).toString('HH:mm')
+        result.sign = '+'
     }
 
-    return sign + dateDiff.addMinutes(Date.parse('now').getTimezoneOffset()).toString('HH:mm')
+    return result
 }
 
 
