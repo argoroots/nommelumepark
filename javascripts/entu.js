@@ -104,7 +104,7 @@ entu.getChilds = function(entityId, userId, userToken, http, callback) {
                 if(!data.result.hasOwnProperty(i)) { continue }
                 for(var n in data.result[i].entities) {
                     if(!data.result[i].entities.hasOwnProperty(n)) { continue }
-                    ids.push(data.result[i].entities[n])
+                    ids.push(data.result[i].entities[n].id)
                 }
             }
 
@@ -117,7 +117,7 @@ entu.getChilds = function(entityId, userId, userToken, http, callback) {
 
 
 
-entu.getReferrals = function(entityId, userId, userToken, http, callback) {
+entu.getReferrals = function(entityId, params, userId, userToken, http, callback) {
     http.get(entuAPI + 'entity-' + entityId +'/referrals', {
             headers: {
                 'X-Auth-UserId': userId,
@@ -133,7 +133,7 @@ entu.getReferrals = function(entityId, userId, userToken, http, callback) {
                 if(!data.result.hasOwnProperty(i)) { continue }
                 for(var n in data.result[i].entities) {
                     if(!data.result[i].entities.hasOwnProperty(n)) { continue }
-                    ids.push(data.result[i].entities[n])
+                    ids.push(data.result[i].entities[n].id)
                 }
             }
 
