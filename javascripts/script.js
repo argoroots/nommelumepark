@@ -186,7 +186,8 @@ angular.module('lumeparkApp', ['ngRoute'])
                     app_id: 'a8si2rq4',
                     name: data.result.user.name,
                     email: data.result.user.email,
-                    created_at: new Date().getTime()
+                    created_at: new Date().getTime(),
+                    customer: 'Nõmme Lumepark - rent'
                 })
 
                 $window.location.href = '/'
