@@ -107,6 +107,8 @@ angular.module('lumeparkApp', ['ngRoute'])
 // GOOGLE ANALYTICS
     .run(['$rootScope', '$location', function($rootScope, $location) {
         $rootScope.$on('$routeChangeSuccess', function() {
+            window.Intercom('update')
+
             ga('send', 'pageview', {
                 page: $location.path(),
                 title: $location.path().substring(1).replace('/', ' - ')
@@ -179,6 +181,14 @@ angular.module('lumeparkApp', ['ngRoute'])
                 $window.sessionStorage.clear()
                 $window.sessionStorage.setItem('userId', data.result.user.id)
                 $window.sessionStorage.setItem('userToken', data.result.user.session_key)
+
+                window.Intercom('boot', {
+                    app_id: 'a8si2rq4',
+                    name: data.result.user.name,
+                    email: data.result.user.email,
+                    created_at: new Date().getTime()
+                })
+
                 $window.location.href = '/'
             })
             .error(function(error) {
