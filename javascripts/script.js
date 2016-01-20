@@ -184,10 +184,14 @@ angular.module('lumeparkApp', ['ngRoute'])
 
                 window.Intercom('boot', {
                     app_id: 'a8si2rq4',
+                    user_id: data.result.user.email,
                     name: data.result.user.name,
                     email: data.result.user.email,
                     created_at: new Date().getTime(),
-                    customer: 'Nõmme Lumepark - rent'
+                    company: {
+                        id: "nommelumepark",
+                        name: "Nõmme Lumepark"
+                    }
                 })
 
                 $window.location.href = '/'
