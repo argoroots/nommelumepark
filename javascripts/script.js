@@ -104,10 +104,22 @@ angular.module('lumeparkApp', ['ngRoute'])
 
 
 
-// GOOGLE ANALYTICS
-    .run(['$rootScope', '$location', function($rootScope, $location) {
+// UPDATE GOOGLE ANALYTICS & INTERCOM
+    .run(['$rootScope', '$location', '$window', function($rootScope, $location, $window) {
         $rootScope.$on('$routeChangeSuccess', function() {
-            window.Intercom('update')
+            if($window.sessionStorage.getItem('userEmail') && $window.sessionStorage.getItem('userName') && $window.sessionStorage.getItem('userEmail')) {
+                window.Intercom('boot', {
+                    app_id: 'a8si2rq4',
+                    user_id: $window.sessionStorage.getItem('userEmail'),
+                    name: $window.sessionStorage.getItem('userName'),
+                    email: $window.sessionStorage.getItem('userEmail'),
+                    created_at: new Date().getTime(),
+                    company: {
+                        id: "nommelumepark",
+                        name: "Nõmme Lumepark"
+                    }
+                })
+            }
 
             ga('send', 'pageview', {
                 page: $location.path(),
@@ -181,18 +193,8 @@ angular.module('lumeparkApp', ['ngRoute'])
                 $window.sessionStorage.clear()
                 $window.sessionStorage.setItem('userId', data.result.user.id)
                 $window.sessionStorage.setItem('userToken', data.result.user.session_key)
-
-                window.Intercom('boot', {
-                    app_id: 'a8si2rq4',
-                    user_id: data.result.user.email,
-                    name: data.result.user.name,
-                    email: data.result.user.email,
-                    created_at: new Date().getTime(),
-                    company: {
-                        id: "nommelumepark",
-                        name: "Nõmme Lumepark"
-                    }
-                })
+                $window.sessionStorage.setItem('userName', data.result.user.name)
+                $window.sessionStorage.setItem('userEmail', data.result.user.email)
 
                 $window.location.href = '/'
             })
