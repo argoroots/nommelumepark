@@ -6,12 +6,14 @@ var entu = {}
 
 entu.getAuthUrl = function(state, redirect_url, http, callback) {
     http.post(entuAPI + 'user/auth', {state: state, redirect_url: redirect_url})
-        .success(function(data) {
+        .then(function(response) {
+            var data = response.data
+
             if(!data.result) { return callback(data) }
 
             callback(null, data.result)
         })
-        .error(callback)
+        .catch(callback)
 }
 
 
@@ -23,7 +25,9 @@ entu.getUser = function(userId, userToken, http, callback) {
                 'X-Auth-Token': userToken
             }
         })
-        .success(function(data) {
+        .then(function(response) {
+            var data = response.data
+
             if(!data.result) { return callback(data) }
 
             var user = {
@@ -34,7 +38,7 @@ entu.getUser = function(userId, userToken, http, callback) {
 
             callback(null, user)
         })
-        .error(callback)
+        .catch(callback)
 }
 
 
@@ -46,7 +50,9 @@ var getEntity = function(entityId, userId, userToken, http, callback) {
                 'X-Auth-Token': userToken
             }
         })
-        .success(function(data) {
+        .then(function(response) {
+            var data = response.data
+
             if(!data.result) { return callback(data) }
 
             var entity = {
@@ -62,7 +68,7 @@ var getEntity = function(entityId, userId, userToken, http, callback) {
 
             callback(null, entity)
         })
-        .error(callback)
+        .catch(callback)
 }
 entu.getEntity = getEntity
 
@@ -76,7 +82,9 @@ entu.getEntities = function(params, userId, userToken, http, callback) {
             },
             params: params
         })
-        .success(function(data) {
+        .then(function(response) {
+            var data = response.data
+
             if(!data.result) { return callback(data) }
             if(data.result.length === 0) { return callback(data) }
 
@@ -84,7 +92,7 @@ entu.getEntities = function(params, userId, userToken, http, callback) {
                 entu.getEntity(entity.id, userId, userToken, http, callback)
             }, callback)
         })
-        .error(callback)
+        .catch(callback)
 }
 
 
@@ -96,7 +104,9 @@ entu.getChilds = function(entityId, userId, userToken, http, callback) {
                 'X-Auth-Token': userToken
             }
         })
-        .success(function(data) {
+        .then(function(response) {
+            var data = response.data
+
             if(!data.result) { return callback(data) }
 
             var ids = []
@@ -112,7 +122,7 @@ entu.getChilds = function(entityId, userId, userToken, http, callback) {
                 entu.getEntity(id, userId, userToken, http, callback)
             }, callback)
         })
-        .error(callback)
+        .catch(callback)
 }
 
 
@@ -125,7 +135,9 @@ entu.getReferrals = function(entityId, params, userId, userToken, http, callback
             },
             params: params
         })
-        .success(function(data) {
+        .then(function(response) {
+            var data = response.data
+
             if(!data.result) { return callback(data) }
 
             var ids = []
@@ -141,7 +153,7 @@ entu.getReferrals = function(entityId, params, userId, userToken, http, callback
                 entu.getEntity(id, userId, userToken, http, callback)
             }, callback)
         })
-        .error(callback)
+        .catch(callback)
 }
 
 
@@ -153,12 +165,14 @@ entu.addEntity = function(parentEntityId, properties, userId, userToken, http, c
                 'X-Auth-Token': userToken
             }
         })
-        .success(function(data) {
+        .then(function(response) {
+            var data = response.data
+
             if(!data.result) { return callback(data) }
 
             callback(null, data.result)
         })
-        .error(callback)
+        .catch(callback)
 }
 
 
@@ -170,12 +184,14 @@ entu.changeEntity = function(entityId, properties, userId, userToken, http, call
                 'X-Auth-Token': userToken
             }
         })
-        .success(function(data) {
+        .then(function(response) {
+            var data = response.data
+
             if(!data.result) { return callback(data) }
 
             callback(null, data.result)
         })
-        .error(callback)
+        .catch(callback)
 }
 
 
@@ -187,10 +203,12 @@ entu.getErply = function(method, params, userId, userToken, http, callback) {
                 'X-Auth-Token': userToken
             }
         })
-        .success(function(data) {
+        .then(function(response) {
+            var data = response.data
+
             if(!data.result) { return callback(data) }
 
             callback(null, data.result)
         })
-        .error(callback)
+        .catch(callback)
 }
