@@ -190,7 +190,9 @@ angular.module('lumeparkApp', ['ngRoute'])
         var state = $window.sessionStorage.getItem('state')
 
         $http.post(authUrl, {state: state})
-            .success(function(data) {
+            .then(function(response) {
+                var data = response.data
+
                 $window.sessionStorage.clear()
                 $window.sessionStorage.setItem('userId', data.result.user.id)
                 $window.sessionStorage.setItem('userToken', data.result.user.session_key)
@@ -199,7 +201,7 @@ angular.module('lumeparkApp', ['ngRoute'])
 
                 $window.location.href = '/'
             })
-            .error(function(error) {
+            .catch(function(error) {
                 cl(error)
             })
     }])
